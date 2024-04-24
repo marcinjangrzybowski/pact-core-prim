@@ -1,78 +1,66 @@
+# ceiling
+
 ## Basic syntax
 
-The `ceiling` function is used to round up a decimal value. This function can be used in two ways:
-
-To round up the decimal value to the nearest integer:
+To use the `ceiling` function to round up a decimal value, use the following syntax:
 
 ```pact
-(ceiling *x*:decimal)
+(ceiling *decimal-value*:decimal)
 ```
 
-To round up the decimal value to a specified precision:
+If you want to round up the decimal value to a certain precision, you can specify an integer as the second argument to the `ceiling` function. The integer argument defines the number of decimal places in the rounded value. Use the following syntax:
 
 ```pact
-(ceiling *x*:decimal *prec*:integer)
+(ceiling *decimal-value*:decimal *precision*:integer)
 ```
 
-In both uses, the `*x*` argument must be a decimal number. If specifying precision, the `*prec*` argument must be an integer.
-
+In both commands, replace `*decimal-value*` with the decimal number you want to round up, and replace `*precision*` with integer number that represent number of decimal places you need.
 
 ## Arguments
 
-The `ceiling` function accepts up to two arguments as defined below:
-
 | Argument | Type | Description |
 | --- | --- | --- |
-| x | decimal | The decimal number to be rounded up. |
-| prec | integer | (Optional) Specifies the precision to which the decimal x should be rounded up. If this parameter is omitted, the function defaults to rounding up to the nearest integer. |
+| x | decimal | Specifies the decimal that you want to round up. |
+| prec | integer | (Optional) Specifies the precision as a decimal. If not included, the function rounds up the decimal x to the next integer. |
 
 ## Prerequisites
 
-Before using the `ceiling` function, ensure that you have the necessary input decimal number (`x`) to be input into the function. This decimal (`x`) can either be rounded up as an integer or to a given precision (`prec`) which is also an integer. You should also make sure that you understand the usage of the function which is to round up the decimal number to the next integer or to the given precision as decimal. It's also important to note that the function can be supported in either invariants or properties.
+N/A
 
 ## Return values
 
-The `ceiling` function returns the rounded up value of the input. The return type could be either a decimal or an integer, depending on the arguments provided.
-
-- In the case of `ceiling` applied with a single argument, the function returns an integer which represents the rounded up value of the initial decimal.
-
-- For `ceiling` applied with two arguments (a decimal and an integer representing the precision), the function returns a decimal that represents the rounded up value of the initial decimal to the specified precision.
-
-This rounded-up value could be useful in instances where the upward rounding behavior is desired, such as in math operations, financial computations, or anywhere precision adjustment is required.
+The `ceiling` function in Pact either returns an integer or a decimal depending on the input provided. If only one argument of type decimal is passed to the function, it rounds up the decimal to the next largest integer and returns this integer. However, if two arguments are passed, which are a decimal and an integer representing precision respectively, the function rounds up the decimal to the precision specified and returns a decimal. This returned value can be useful in situations where precise rounding up of numbers is required.
 
 ## Examples
-
-In this example, the `ceiling` function is used to round up the decimal number to the next integer.   
 
 ```pact
 (ceiling 3.5)
 ```
-Returns: `4` 
 
-In the following example, the `ceiling` function also rounds up the decimal number but to a specific precision that is defined as `2`.
+In this example, the decimal number 3.5 is rounded up to the next integer, resulting in 4.
 
 ```pact
 (ceiling 100.15234 2)
 ```
-Returns: `100.16`
+In this example, the decimal number `100.15234` is rounded up to a `precision` of 2 decimal places, resulting in `100.16`. 
 
-Note: `ceiling` function can be used within invariants or properties for rounding up decimal values.
+Note: The function `ceiling` can be used in either invariants or properties for rounding decimal values.
 
 ## Options
 
-The `ceiling` function doesn't have any configurable options.
+N/A
 
 ## Property validation
 
-For property validation, you can use the `ceiling` function when specifying an invariant or a property to test your mathematical calculations or rounding functionalities in your code. The `ceiling` function checks if its arguments are of correct types - the first argument should be a decimal, while the second optional argument should be an integer specifying the precision level. 
+In case of the `ceiling` function, property validation is essential. In the primary form `(ceiling x)` the function verifies whether `x` is of type `decimal`. This function returns an error if `x` is not a decimal number.
 
-When the `ceiling` function is called with a single argument, it rounds the decimal number up to the next integer. If called with two arguments, it rounds the decimal to the specified precision as decimal. Incorrect data type or passing more arguments than necessary will result in an error.
+In the secondary form `(ceiling x prec)`, the function validates both `x` and `prec` inputs. `x` must be a `decimal` value, and `prec` must be an `integer`. If any input deviates from their expected type, the function will return an error.
 
-Error conditions include: wrong number of arguments provided, wrong types of arguments provided, or a non-numeric value for precision.
+Note that with the `ceiling` function, a call with an value of `prec` more than the precision of `x` or less than 0 is permitted but does not make practical sense, as the result will be the same as the input `x`. 
+
+In contexts like specified invariants or properties, using `ceiling` can be effective for property checking. For example, you can use the `ceiling` function to validate that an output value does not exceed a specified threshold.
 
 ## Gotchas
 
-- The `ceiling` function in Pact works with decimal numbers. If an integer is passed as an argument, it will return the same integer, with no apparent rounding up. Thus, it might not behave as expected if used with whole numbers. 
-- When using the version of `ceiling` that takes a precision argument, remember that it rounds up to the specified number of decimal places, and not to the closest whole number. This might lead to unexpected results if you're thinking in terms of traditional rounding methods. 
-- Always ensure that the precision argument passed is a positive integer. Negative values or non-integer decimal values could lead to unexpected outcomes or errors.
+The `ceiling` function does not support negative precision values. If you attempt to provide a negative precision, the function will return an error. Furthermore, it's important to note how specifying decimal precision works. If you call `(ceiling 1.9999 3)` expecting it to return `2.000` because it rounds up the decimal, this is not the case. The decimal precision rounds to the nearest decimal based on the precision, and not necessarily up. So `(ceiling 1.9999 3)` will return `1.999` and not `2.000`.
 

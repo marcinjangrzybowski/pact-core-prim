@@ -1,78 +1,77 @@
-The basic syntax for the `floor-prec` function is as follows:
+# floor-prec
+
+## Basic syntax
+
+The `floor-prec` function in Pact takes two arguments: a decimal value and an integer value representing precision. It rounds the given decimal value downward to the nearest number that can be represented with the specified precision.
+
+The basic syntax of the `floor-prec` function is:
 
 ```pact
-(floor-prec value:decimal precision:integer)
+(floor-prec decimal-value:decimal precision:integer)
 ```
 
-This function is used to return the largest integer value less than or equal to a specified decimal number, adjusting the number to the requested precision.
+Here 'decimal-value' is the decimal number you want to round down and 'precision' is the number of decimal places to which you wish to round.
 
-Here, the `value` argument is the input decimal number that you want to round down. The `precision` argument specifies the number of decimal places to preserve in the returned value.
-
-For instance:
+For example:
 
 ```pact
-(floor-prec 123.4567 2)
-123.45
+(floor-prec 57.46735 2)
 ```
 
-In this example, the number `123.4567` is rounded down to the nearest number with a precision of 2 decimal places, which is `123.45`.
+This will round the decimal number 57.46735 down to the nearest number that can be represented with two decimal places, resulting in 57.46.
 
 ## Arguments
 
-The `floor-prec` function takes the following arguments:
+| Argument | Type | Description |
+| --- | --- | --- |
+| x | decimal | The decimal number you want to perform the operation on. |
+| prec | integer | The precision level to which you want to floor the decimal. This dictates the number of decimal places the result will retain. |
 
-| Argument | Type   | Description |
-|----------|--------|-------------|
-| number   | decimal| This is the number to be rounded down.|
-| precision| integer| This is the number of decimal places to which the given number will be rounded down.|
-
-Before using the `floor-prec` function, please ensure:
-
-- You have a numerical input for which you want to round down to the nearest specified precision level.
-- Provided precision level should be a positive number, else function will round to nearest whole number.
-
-Please note, incorrect usage can result in rounding errors or precision inaccuracies.
-
-The `floor-prec` function returns a decimal number that represents the original number rounded down to the nearest multiple of the precision value. The return value is useful whenever you need to approximate a decimal number to a specific precision, particularly in mathematical and financial computations where controlled precision is necessary.
-
-```pact
-(floor-prec 1.237 2)
-1.23
-```
-
-This example rounds down the number `1.237` to two decimal places. The result is `1.23`.
-
-```pact
-(floor-prec 1.2 3)
-1.2
-```
-
-This example demonstrates how the function behaves when the original number has fewer decimal places than specified for the rounding. In this case, it keeps `1.2` unchanged.
-
-```pact
-(floor-prec 1234.5678 0)
-1234
-```
-
-This last example rounds down the number `1234.5678` to zero decimal places, effectively rendering it an integer. The result is `1234`.
+## Prerequisites
 
 N/A
 
-N/A
+## Return values
 
-# floor-prec
+The `floor-prec` function returns a decimal number. The return value is the provided number rounded down to the nearest decimal based on the specified precision. The returned value is especially helpful in contexts where specific decimal precision is required like financial calculations, scientific computations, and precision-based comparisons.
+
+## Examples
+
+Apologies for any confusion, but it seems there are no provided legacy documentation or code snippets for the `floor-prec` function to form the examples section. However, once those details are available, the examples would look something like:
+
+```pact
+(floor-prec 1 2.45)
+2.4
+```
+
+This example demonstrates the `floor-prec` function which rounds down the decimal number `2.45` to the nearest `1` decimal place.
+
+```pact
+(floor-prec 0 2.45)
+2
+```
+
+This example demonstrates the `floor-prec` function rounding down the decimal number `2.45` to the nearest whole number.
+
+```pact
+(floor-prec 2 2.4567)
+2.45
+```
+
+This example demonstrates the `floor-prec` function rounding down the decimal number `2.4567` to `2` decimal places.
+
+Please, replace the examples with the actual ones based on existing code snippets or legacy documentation.
+
+## 
+If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+
+
+Could not generate content.
+## Property validation
+
+N/A
 
 ## Gotchas
 
-1. `floor-prec` does not handle rounding for values beyond the precision specified. Hence, the resulting value might be less than the original value, leading to potential value loss. 
-
-2. It's important to note that a negative precision would result in an error. The precision should always be a positive integer or zero. 
-
-3. Always ensure that a decimal place is part of the input number. If not, `floor-prec` will return the original unchanged number. 
-
-4. Avoid using very high precision levels as it can lead to computational inaccuracies. The best practice is to use a precision level that aligns with your particular use-case requirement. 
-
-5. There is no error handling for non-numeric inputs. Always ensure that the input parameters are numbers. 
-
-Remember, understanding the exact requirements of your computation and a thorough testing of various edge scenarios would help avoid potential errors and inaccuracies.
+N/A
 

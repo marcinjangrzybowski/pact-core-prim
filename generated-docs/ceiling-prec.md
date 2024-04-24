@@ -1,93 +1,73 @@
+# ceiling-prec
+
 ## Basic syntax
 
-To get the smallest integer greater than or equal to the given number with precision, use the following syntax:
+Here is an example of how to document the basic syntax of the `ceiling-prec` function:
 
 ```pact
-(ceiling-prec *number*:decimal *precision*:integer)
+(ceiling-prec value precision)
 ```
+
+The `ceiling-prec` function has 2 parameters - `value` and `precision`. Both are required and should be given as arguments when calling the function.
+
+- `value` is a decimal or integer representing the number you wish to round up.
+- `precision` is an integer that defines the precision of the rounding operation.
+
+Here is an example code snippet to demonstrate how to use this function:
+
+```pact
+(ceiling-prec 12.3456 2)
+```
+
+This code will round the number 12.3456 up to nearest hundredths place, resulting in 12.35.
 
 ## Arguments
 
-Use the following arguments to define the precision of the ceiling operation you want to perform using the `ceiling-prec` Pact function.
-
 | Argument | Type | Description |
 | --- | --- | --- |
-| number | decimal | Specifies the number you want to retrieve the ceiling value of. |
-| precision | integer | Specifies the precision of the decimal places |
+| decimal | decimal | This is the decimal number input that you want to calculate the ceiling value for. |
+| precision | integer | Specifies the precision for the decimal place up to which you want to calculate the ceiling value. It determines how many digits to the right of the decimal point in the number should be considered for the ceiling calculation. |
 
-## Return values
-
-The `ceiling-prec` function returns the smallest integer greater than or equal to the given number at the specified precision. The return value is a decimal.
-
-## Examples
-
-The following example returns the ceiling value of a decimal number at the specified precision:
-
-```pact
-(ceiling-prec 3.1459 2)
-3.15
-```
-
-You can use the `ceiling-prec` function to round up any decimal number to the nearest whole number or to any precision of your choice.
-For example:
-
-```pact
-(ceiling-prec 7.834 0)
-8
-```
-
-The `ceiling-prec` function takes in the following arguments:
-
-| Argument | Type | Description |
-| --- | --- | --- |
-| number | decimal | The decimal number to be rounded up. |
-| precision | integer | The number of decimal places to keep in the result. |
+## Prerequisites
 
 N/A
 
 ## Return values
 
-The `ceiling-prec` function returns the smallest integer greater than or equal to the provided value, with precision after the decimal point set by the precision value. The return value is a decimal. 
-
-Understanding the return value of `ceiling-prec` is essential when you need exact or approximated rounding. For numerous tasks in finance, physics, statistics and math, working with the `ceiling-prec` function is a must.
+The `ceiling-prec` function returns a value with a higher precision rounded to its nearest whole number. If the provided number already is a whole number, it will return that number as is. The return value will be of a decimal type. If the precision is higher than the decimal number, the function rounds the number to the nearest whole number. The returned value can be utilized in mathematical operations requiring precision or where rounding off to the nearest whole number is required. If the function encounters an error during calculations, it will stop execution and return the error.
 
 ## Examples
 
-Here are some examples demonstrating the use of `ceiling-prec` function:
-
-Example 1: In this basic usage, we are rounding up to the nearest whole number with precision of 0:
 ```pact
-(ceiling-prec 0 123.456)
-124
+(ceiling-prec 1.1234567 2)
+1.13
 ```
 
-Example 2: Here, we're rounding up to the nearest whole number with precision of 1:
+In this example, the fractional part of 1.1234567 is rounded off, leaving 1.13
+
 ```pact
-(ceiling-prec 1 123.456)
-123.5
+(ceiling-prec 3.9876543 3)
+3.988
 ```
 
-Example 3: In this case, rounding up to the nearest ten with precision of -1:
+In this example, the fractional part of 3.9876543 is rounded off, leaving 3.988
+
 ```pact
-(ceiling-prec -1 123.456)
-130
+(ceiling-prec 4.9999999 0)
+5.0
 ```
 
-Example 4: Here, we're rounding up to the nearest hundred with precision of -2:
-```pact
-(ceiling-prec -2 123.456)
-200
-```
+In this example, the fractional part of 4.9999999 is fully rounded off, leaving 5.0
+
+## Options
 
 N/A
 
-N/A
+## Property validation
+
+The `ceiling-prec` function performs a validation check to confirm that the input passed is a decimal number. If the input provided isn't a decimal, the function will throw an error. This reinforces the property that `ceiling-prec` will only take decimal numbers as valid inputs to round up to the nearest whole number. The precision of this is always best assumed as 0. Please ensure your input is of the suitable and intended type to avoid any runtime errors.
 
 ## Gotchas
 
-The `ceiling-prec` function operates with precision to the decimal level. Thus, it is important to note that it might not return expected results with floating-point numbers due to the inherent imprecision of these numbers.
-
-Another thing to note is that `ceiling-prec` always rounds up, regardless of the original value. Therefore, even a small fraction over a whole number result in the next higher whole number.
-
-Always keep in mind the inherent behavior and properties of this function when using it in your code or calculations to prevent unexpected results or inaccuracies.
+N/A
 

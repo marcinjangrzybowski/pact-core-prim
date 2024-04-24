@@ -1,63 +1,71 @@
 # round-prec
 
-The `round-prec` function is used to round a given number to the specified precision.
-
 ## Basic syntax
 
-Here is the basic syntax to use the `round-prec` function:
+The basic syntax for the `round-prec` function in Pact is:
 
 ```pact
-(round-prec number precision)
+(round-prec value precision)
 ```
 
-- `number`: The original number you want to round.
-- `precision`: The number of decimal places to round to.
+Here `value` is the number you want to round and `precision` is the number of decimal places to which you want to round `value`.
 
-An example of usage would be:
+The 'value' argument can be of any data type that represents numeric values including decimal and integer. The 'precision' must be an integer representing the number of decimal places. Both arguments are required.
+
+Example:
 
 ```pact
 (round-prec 3.14159 2)
 ```
-This will round the number `3.14159` to `3.14`. 
+In this example, the `round-prec` function will round the value 3.14159 to two decimal places, resulting in 3.14.
 
-Please note that both the `number` and `precision` values need to be of the `decimal` data type for this function to work properly.
+## Arguments
 
 | Argument | Type | Description |
 | --- | --- | --- |
-| value | decimal | Specifies the number you want to round.|
-| precision | integer | Dictates the number of decimal places the return value will have. It determines the precision of the rounding. |
+| x | decimal | The number that you want to round to a specific number of decimal places. |
+| prec | integer | The number of decimal places to which you want to round `x`. The value should be positive. |
+
+## Prerequisites
 
 N/A
 
 ## Return values
 
-The `round-prec` function returns a numerical value that is the original number rounded to the specified number of decimal places. This return value is useful in contexts where precision is required and only a certain number of decimal places are desirable or acceptable.
+The `round-prec` function returns a numeric value. This returned value corresponds to the original input value rounded to the nearest integer, after the precision of the original number has been adjusted as per the precision value specified. The returned value can be of use in various mathematical and statistical operations where precision-adjusted values are required.
+
+## Examples
 
 ```pact
-(round-prec 1.3456 2)
+(round-prec 2.45678 2)
+2.46
 ```
-In this example, the above `round-prec` invocation would round the number 1.3456 to two decimal places, resulting 1.35.
+
+The above example rounds the decimal number 2.45678 to a precision of 2 decimal places, resulting in 2.46.
 
 ```pact
-(round-prec 2.36 0)
+(round-prec 2.45678 0)
+2
 ```
-For this example, rounding the number 2.36 with precision 0 would return the number 2 as result.
+
+The above example rounds the decimal number 2.45678 with no decimal precision, resulting in 2.
 
 ```pact
-(round-prec 0.6743 3)
+(round-prec 2.45678 3)
+2.457
 ```
-In this case, rounding the number 0.6743 with precision 3 would give us 0.674 as the result.
+
+The above example rounds the decimal number 2.45678 to a precision of 3 decimal places, resulting in 2.457.
+
+## Options
 
 N/A
 
+## Property validation
+
 N/A
 
-Unfortunately, without concrete context from any legacy documentation or code snippets, writing the 'Gotchas' section for `round-prec` is not feasible. But as a general rule of thumb, here are few points that might be relevant based on the function name: 
+## Gotchas
 
-- While using precision argument in `round-prec`, if precision is larger than the actual number of decimal places in number, it might yield unexpected results. 
-- Be cautious of rounding errors. Rounding can introduce small discrepancy due to the precision of floating point representation.
-- Consider the data type of numbers you're working with, as certain types may not support the precision parameter.
-- Confirm the expected rounding behavior in your specific application. Different programming languages or libraries might implement rounding differently.
-  
-Please consider these points as assumptions and make sure to validate them as per your specific usage scenario or language constructs.
+N/A
 
