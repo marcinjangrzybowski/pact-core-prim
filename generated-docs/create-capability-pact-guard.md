@@ -1,72 +1,69 @@
 # create-capability-pact-guard
 
-## 
-Generate a clear and concise explanation of the basic syntax for your function. This section should contain at least one code snippet demonstrating how to use the function. The code should be provided in the format: 
+## Basic syntax
 
-'''pact
-your function syntax
-'''
+The `create-capability-pact-guard` function is used to create a guard that validates if the defined capability is acquired and if the currently executing defpact is operational. Here is the basic syntax:
 
-If your function can be overloaded, provide additional code snippets to reflect its multiple uses. Overall, aim to describe the syntax in a way that is easy to comprehend, including any necessary arguments and acceptable data types.
+```pact
+(create-capability-pact-guard *capability*:bool)
+```
+
+In this syntax, *capability* is a function which returns boolean value. When applied, it enforces that the corresponding capability is acquired and that the currently-executing defpact is operational.
+
+Here is an example of its usage:
+
+```pact
+(create-capability-pact-guard (ESCROW owner))
+```
+
+This example enforces that the ESCROW existing on the current defpact's owner has been acquired and is operational.
 
 
-Could not generate content.
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+## Arguments
 
 | Argument | Type | Description |
+| --- | --- | --- |
+| CAPABILITY | bool | The capabilities and conditions that must be acquired and met for the currently executing defpact to be operational. |
 
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
+## Prerequisites
 
-Ensure the number of rows in your table matches the arity of your function. 
+Before you can use `create-capability-pact-guard`, the capability must be already defined in your code. The function expects the `capability` to be of type boolean. Also, this function should be used when a pact is currently executing. This means that you should have a defpact operational.
 
+## Return values
 
-Could not generate content.
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+The `create-capability-pact-guard` function returns a guard. This guard ensures that the capability is acquired and that the currently executing defpact is operational. The return value is primarily used to enforce certain conditions in a smart contract, thereby enhancing its security. If these conditions are not met, the execution of the contract can be halted.
 
-
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
-
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
-
-
-Could not generate content.
 ## Examples
 
-The `create-capability-pact-guard` function is used to create a guard that ensures a specified capability is acquired and that the currently-executing defpact is operational. Here are some examples of its usage:
+## Examples
+
+The `create-capability-pact-guard` function is used to create a guard that enforces that the defined capability is acquired and the currently executing defpact is operational. 
+
+Here is a simple example:
 
 ```pact
-(create-capability-pact-guard (TRANSFER "Alice"))
+(create-capability-pact-guard (ESCROW owner))
 ```
-The above example illustrates how to create a guard that ensures that the `TRANSFER` capability associated with the user "Alice" is acquired and that the currently-executing defpact is operational.
 
-```pact
-(create-capability-pact-guard (ESCROW "Bob"))
-```
-In this example, a guard is created that checks if the `ESCROW` capability for "Bob" is acquired and if the currently-executing defpact is operational. This is particularly useful for smart contracts involving escrowing of assets.
+In this example, the function creates a pact guard for the ability to "ESCROW" for the "owner". 
 
-```pact
-(create-capability-pact-guard (DEBIT "Charlie"))
-```
-This final example creates a guard which checks if the `DEBIT` capability specific to the user "Charlie" is acquired and that the currently-executing defpact is operational. This would be useful in financial transactions involving debit operations.
+Remember to include the required capability as a lamba function. This function can be of any valid capability that returns a boolean value.
 
-These examples illustrate the use of different capabilities (`TRANSFER`, `ESCROW`, `DEBIT`) along with different users ("Alice", "Bob", "Charlie") to showcase the flexibility and power of the `create-capability-pact-guard` function.
+## Options
 
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+N/A
 
+## Property validation
 
-Could not generate content.
-## 
-If your function includes any form of property validation, explain it here. Clearly explain the rules that the function follows to verify its arguments and error conditions. If there is no property validation involved in your function, respond with 'N/A'.
+N/A
 
+## Gotchas
 
-Could not generate content.
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+While using the `create-capability-pact-guard` function, developers must be aware of a few important details to avoid unexpected issues:
 
+- The function assumes that the capability has already been acquired and should be operational. Using it without these prerequisites might result in an error.
+- The function should be used within a defpact execution, because it checks for the operational status of the currently executing defpact.
+- Be cautious with specifying the CAPABILITY, it should always be valid and properly defined. In case of invalid capability usage, the function will likely throw error.
 
-Could not generate content.
+It is important to understand these nuances to effectively use the `create-capability-pact-guard` function without unwanted surprises or possibly incorrect results.
+

@@ -1,57 +1,85 @@
 # read-keyset
 
-## 
-Generate a clear and concise explanation of the basic syntax for your function. This section should contain at least one code snippet demonstrating how to use the function. The code should be provided in the format: 
+## Basic syntax
 
-'''pact
-your function syntax
-'''
+To use the `read-keyset` function, use the following syntax:
 
-If your function can be overloaded, provide additional code snippets to reflect its multiple uses. Overall, aim to describe the syntax in a way that is easy to comprehend, including any necessary arguments and acceptable data types.
+```pact
+(read-keyset *key*:string)
+```
 
+This would extract the keyset from the message data body with a specified key. Keyset is defined by an object with "keys" and "pred" fields like `{ "keys": KEYLIST, "pred": PREDFUN }`. PREDFUN should resolve to a keys predicate.
 
-Could not generate content.
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+Example usage:
+
+```pact
+(read-keyset "admin-keyset")
+```
+
+In the above example, "admin-keyset" is the specified string key used to retrieve the keyset from the message data body.
+
+## Arguments
 
 | Argument | Type | Description |
+| --- | --- | --- |
+| key | string | The key used to refer to the keyset in the message data body. This should point to a keyset in the format `({ "keys": KEYLIST, "pred": PREDFUN })`, where PREDFUN is a key predicate. |
 
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
+## Prerequisites
 
-Ensure the number of rows in your table matches the arity of your function. 
+Before using the `read-keyset` function, a keyset must be defined and added to the message data body. This should be in the format `{"keys": KEYLIST, "pred": PREDFUN}` where KEYLIST is a list of keys and PREDFUN is a keys predicate. Keep in mind that the keysets are expected to be represented as a string.
 
-
-Could not generate content.
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
-
-
-Could not generate content.
 ## Return values
 
-The `read-keyset` function returns a `keyset`, a data structure containing the keys and predicate logic for authorizing transactions. The returned keyset is read from the message data body, which is specified through the KEY argument. This function is primarily leveraged for looking up user-defined keysets, thus facilitating the verification of transaction authorizations.
+The `read-keyset` function returns a `keyset` object. The `keyset` object consists of `"keys"` which is a list of public keys, and `"pred"` which is a keys predicate. This returned value is useful when you need to get a keyset from the message data body for operations such as defining keysets or creating accounts in the blockchain.
 
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+## Examples
 
-'''pact
-your function usage example
-'''
+Sure, here are a few examples demonstrating the `read-keyset` function: 
 
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
+```pact
+(read-keyset "admin-keyset")
+```
+In this example, it's reading the KEY from "admin-keyset". 
+
+Here are a few more examples from the repositories:
+
+```pact
+(fund-user "alice" (read-keyset "alice") 10.0)
+```
+In this example, it's reading the KEY from "alice" and is associated with `fund-user` function. 
+
+```pact
+(coin.create-account "gas-buyer" (read-keyset 'buyer))
+```
+In this example, `read-keyset` is reading the KEY from 'buyer' to provide the second argument for `create-account` function.
+
+```pact
+(coin.rotate "emily" (read-keyset "k1"))
+```
+In this example, `read-keyset` is reading the KEY from "k1" to provide the second argument for `rotate` function.
+
+Please, alter those examples to your need, including different arguments or use cases where applicable.
 
 
-Could not generate content.
 ## Options
 
 N/A
 
 ## Property validation
 
-N/A
+The `read-keyset` function inherently performs property validation to ensure the correct retrieval of keysets. The function checks if the specified key is present in the message data body and whether it corresponds to a valid keyset structure i.e., `{ "keys": KEYLIST, "pred": PREDFUN }`, where `KEYLIST` stands for a list of keys and `PREDFUN` represents a keys predicate.
 
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+In case, the specified key does not exist in the message data body, or the associated value does not represent a valid keyset `{ "keys": KEYLIST, "pred": PREDFUN }`, the function will fail.
 
+## Gotchas
 
-Could not generate content.
+- `read-keyset` can only read keysets from message data in the body of the smart contract. It will cause an error if the specified key is not defined in the message data.
+
+- Avoid using the `read-keyset` function if the keyset will be used only for validation checks and not for capabilities specification since there's potential for keyset hijacking. Use `enforce-keyset` or `require-capability` instead for enforcing authorization rules.
+
+- This function expects the keysets to be structured as JSON objects in the form { "keys": KEYLIST, "pred": PREDFUN }. If input data is not properly structured, it could lead to unexpected behavior or errors. 
+
+- `read-keyset` fetches and enforces the provided keyset, meaning that it asserts that the transaction was signed by someone in the keyset. Consequently, misuse or misunderstanding about its enforcement nature could inadvertently open up security vulnerabilities. 
+
+These are misconceptions and issues that users could potentially run into while using `read-keyset`. Proper understanding and careful handling of keysets is crucial for building secure and efficient smart contracts.
+

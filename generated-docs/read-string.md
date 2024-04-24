@@ -2,64 +2,64 @@
 
 ## Basic syntax
 
-The basic syntax for the function `read-string` is:
+To parse a key string or number value from the top level of the message data body as a string, use the following syntax:
 
 ```pact
-(read-string *key*:string)
+(read-string "key")
 ```
 
-Where:
-- `key` is a string that represents the key value you want to parse from the top level of the message data body.
+The key should be provided as a string. Replace "key" with the actual key that you want to parse. 
 
-Here's an example of usage:
+Note that the `read-string` function cannot be overloaded.
+
+Example:
 
 ```pact
 (read-string "sender")
 ```
 
-In this example, "sender" is the key. The function will return the value associated with this key, parsed as a string.
-
 ## Arguments
 
 | Argument | Type | Description |
 | --- | --- | --- |
-| key | string | It represents the key value that the function will parse from the top level of the message data body as a string. It might be a string or number value. |
+| key | string | The key to parse from the top level of the message data body. This can be a string or number. The function will return the corresponding value as a string. |
 
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+## Prerequisites
 
+N/A
 
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+## Return values
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
+The `read-string` function returns a string value. As its primary purpose is to parse a specific string or numeric key from the top level of the message data body, it will return the corresponding value associated with that key, but always as a string. For instance, if the message data body contains a key-value pair like `"user_id":12345`, calling `read-string "user_id"` will return `"12345"`. This feature is particularly useful when you want to ensure the data received is in the string format, regardless of its original type in the message body.
 
+## Examples
 
-Could not generate content.
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+```pact
+(read-string "sender")
+```
 
-'''pact
-your function usage example
-'''
+In this example, the `read-string` function is used to parse the "sender" value from the top level of the message data body. The parsed value will be returned as a string. 
 
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
+```pact
+(read-string "transaction-id")
+```
 
+In this example, the `read-string` function is parsing the "transaction-id" from the top level of the message data body. The resulting data will be returned as a string. 
 
-Could not generate content.
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+Keep in mind, these examples assume that the `"sender"` and `"transaction-id"` keys exist in the top level of the data body. If not, the function will either fail or return a default value depending on your error handling setup.
 
+## Options
 
-Could not generate content.
-## 
-If your function includes any form of property validation, explain it here. Clearly explain the rules that the function follows to verify its arguments and error conditions. If there is no property validation involved in your function, respond with 'N/A'.
+N/A
 
+## Property validation
 
-Could not generate content.
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+N/A
 
+## Gotchas
 
-Could not generate content.
+- The `read-string` function will throw an error if the key provided doesn't exist in the top-level of the message data.
+- This function only works in the context of a transaction. If used outside of this context, it will throw an error.
+- `read-string` treats all inputs as strings regardless of their actual type. If the original form of the input value is required, use the corresponding `read` function (for example `read-integer`, `read-decimal`, etc.).
+- The parsing capability of `read-string` is limited to flat data structures. Nested or deep data structures may not be read correctly.
+

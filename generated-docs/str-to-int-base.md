@@ -2,36 +2,35 @@
 
 ## Basic syntax
 
-The `str-to-int-base` function in Pact takes two arguments and converts a string of digits to an integer based on a given base. The base must be between 2 and 16, inclusive, and the digits must be valid for the given base.
+The `str-to-int-base` function takes two arguments: a string and an integer that represents the base to which the string should be converted.
 
-Here's the syntax for the `str-to-int-base` function:
-
-```pact
-(str-to-int-base string-in-specific-base: string base: integer)
-```
-
-For example, to convert "101" in base 2 (binary) to an integer:
+Here is the basic syntax:
 
 ```pact
-(str-to-int-base "101" 2) 
+(str-to-int-base base:string str:integer)
 ```
 
-This would output the integer `5` as the binary 101 is equal to the decimal number 5. 
+In this syntax, `base` is the base to which you want to convert the string `str`. The `base` must be an integer between 2 and 16 (both inclusive). 
 
-If the function is used with a string that contains digits not valid for the specified base, it will throw an error. For instance, attempting to convert the string "123" with base 2:
+The `str` argument is the string that you want to convert. It should consist of digits and/or letters, depending on the base you have specified. For bases greater than 10, the letters A-F can be used to signify the digits 10-15. 
+
+The function returns the integer representation of the string in the specified base. 
+
+Here is an example of using this function:
 
 ```pact
-(str-to-int-base "123" 2)
+(str-to-int-base 2 "1011")
+11
 ```
 
-This would cause an error as the digit `2` and `3` are not valid in base `2`.
+In this example, the binary string "1011" is converted to a decimal integer, which is 11.
 
 ## Arguments
 
 | Argument | Type | Description |
 | --- | --- | --- |
-| str | string | The input string that you want to convert to an integer. |
-| base | integer | The base in which the input string is provided. The function converts this string into an integer, using this base. For example, if the base is 2, the function treats the string as a binary number, if the base is 10, it treats string as a decimal number, and so on. The valid input range for base is between 2 and 16 inclusive. |
+| str | string | The string representation of the number you want to convert. |
+| base | integer | The base of the number system that the string represents. This should be a positive integer between 2 and 36, inclusive. |
 
 ## Prerequisites
 
@@ -39,30 +38,35 @@ N/A
 
 ## Return values
 
-The `str-to-int-base` function returns an integer. This integer is the conversion of the given string according to the specified base. In cases where the specified string cannot be correctly converted into an integer (invalid characters for the given base), the function triggers an error and does not return a value. This function is useful in scenarios where you need to manipulate or calculate with numeric data that initially comes in a string format with a specific base.
+The `str-to-int-base` function returns an integer. This integer is the result of converting the provided string into an integer of the provided base. The function will return `null` if the conversion is not possible due to invalid input, such as non-numeric characters in the string (for number bases 2-10) or characters outside the range A-F (for number bases 11-16). 
+
+For instance, in a scenario where a hexadecimal string needs to be converted into an integer for further calculations, `str-to-int-base` can be used to perform this conversion. The return value then aids in these additional operations.
 
 ## Examples
-
-```pact
-(str-to-int-base 10 "150")
-150
-```
-
-In this example, the `str-to-int-base` function converts the base-10 string "150" to an integer.
 
 ```pact
 (str-to-int-base 16 "FF")
 255
 ```
-
-In the above example, the `str-to-int-base` function converts the base-16 (hexadecimal) string "FF" to its decimal equivalent integer.
+This example converts the hexadecimal (base 16) string "FF" to an integer and the output is 255. 
 
 ```pact
-(str-to-int-base 2 "1111")
-15
+(str-to-int-base 10 "12345")
+12345
 ```
+This example converts the decimal (base 10) string "12345" to an integer and the output is 12345.
 
-In the final example, the `str-to-int-base` function is used to convert the base-2 (binary) string "1111" into its decimal equivalent integer.
+```pact
+(str-to-int-base 8 "77")
+63
+```
+This example converts the octal (base 8) string "77" to an integer and the output is 63.
+
+```pact
+(str-to-int-base 2 "11111111")
+255
+```
+This example converts binary (base 2) string "11111111" to an integer and the output is 255.
 
 ## Options
 
@@ -70,25 +74,9 @@ N/A
 
 ## Property validation
 
-The `str-to-int-base` function performs property validation by checking the two input arguments. 
-
-Firstly, it checks to see if the first argument is a string. It will throw an error if the input is not of the string data type.
-
-Secondly, it checks if the second argument is an integer value between 2 and 16. If the input is outside of this range, an error will be thrown.
-
-In case of incorrect input, the function will fail and return an error message describing the encountered issue which can then be handled appropriately in your code.
+N/A
 
 ## Gotchas
 
-The `str-to-int-base` function allows conversion from a string to an integer in a specific base. However, there are a few things to be extra careful about:
-
-1. The function does not perform any validation on the input string. If the string contains any character that is not representable in the specified base, the function can return unexpected results. Make sure that your input string is correctly formatted for the base you're using.
-
-2. The base must be between 2 and 36 (inclusive). Using a base outside this range will result in an error.
-
-3. For bases beyond 10, the function treats both lower-case and upper-case letters as valid digits. 'a' to 'z' represent the numbers 10 to 35, and 'A' to 'Z' also represent the numbers 10 to 35. Make sure not to confuse the case of your characters.
-
-4. The function does not handle negative numbers. If you need to work with negative numbers, you will need to handle this separately in your code. 
-
-5. Make sure you don't confuse the base parameter with the radix. The base is the number of unique digits, including zero, used to represent numbers in a positional numeral system. The radix, on the other hand, is the base of a positional numeral system or the number of unique digits, including the digit zero, used to represent numbers.
+N/A
 

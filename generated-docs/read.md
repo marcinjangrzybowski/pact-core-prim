@@ -2,82 +2,87 @@
 
 ## Basic syntax
 
-The `read` function retrieves data from a database based on the supplied table name and key identifiers.
-There are two main forms of syntax for the `read` operation:
-
-1. Read the full record from a table:
+To retrieve the row from a table for a specified key, use the `read` function with the following syntax:
 
 ```pact
-(read tableName:keyType keyString)
+(read accounts key)
 ```
 
-In this form, `tableName` is the name of the table to read from, and `keyString` is the key of the record that you want to retrieve. 
+In this case, `accounts` is the table from which the row is being read and `key` is the specific identifier of the row to be returned. Ensure that `key` is given as a `string`.
 
-2. Read specific columns from a row in a table:
+If you only want specific columns from the row, you can specify them as a list with the `columns` argument like so:
 
 ```pact
-(read tableName:keyType keyString [columnName1, columnName2,...])
+(read accounts key ['balance 'ccy])
 ```
 
-In this form, in addition to `tableName` and `keyString`, you specify an array of column names that you want to retrieve. Only these specified columns will be returned from the indicated row of the table.
+In this case, only the 'balance' and 'ccy' columns would be returned for the row. If the `columns` parameter is not provided, all columns will be returned. 
 
-In both forms, the `read` function will return the requested data as a Pact object.
+Note: All column names must be provided as `string` types within the list.
 
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+## Arguments
 
 | Argument | Type | Description |
-
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
-
-Ensure the number of rows in your table matches the arity of your function. 
-
-
-Could not generate content.
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+| --- | --- | --- |
+| table | table:{row} or string | Specifies the table from which to read. Can be a table object or a string representing the table's name. |
+| key | string | The identifier of the row to be read. It is the indexing value by which entries in the table are differentiated. |
+| columns (optional) | list [string] | A list of specific columns to return from the row. If not provided, all columns from the row will be returned. |
 
 
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+## Prerequisites
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
+To use the `read` function in your Pact code, you must have an existing table or object from which data can be read. The key for the data to be retrieved must be known and it should refer to an actual entry within the table or object. The data types of the arguments must also match those expected by the function i.e., the table or object name must be a string and key must be of the appropriate datatype for that table or object.
 
+## Return values
 
-Could not generate content.
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+The `read` function returns an object of type `{row}` extracted from the specified table on the basis of the key or keys provided. If specific columns are specified, the `{row}` object will only contain the values for those columns.
 
-'''pact
-your function usage example
-'''
+This function is useful in numerous situations where there is a need to fetch data stored in a specific row of a table. The data fetched in this manner can be used for various scenarios from simple retrieval and display to complex manipulations or computations.
 
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
+Note: In the cases where there is no matching row in the table for the specified key or keys, the `read` function will return an empty object.
 
+## Examples
 
-Could not generate content.
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+```pact
+(read myTable "myKey")
+```
+This example reads the row from table 'myTable' for key 'myKey', returning the respective database record object.
 
+```pact
+(read myTable "myKey" ['column1 'column2])
+```
+In this example, the function reads the row from table 'myTable' for key 'myKey', but instead of returning the full database record object, it only returns the specified columns: 'column1' and 'column2'.
 
-Could not generate content.
+```pact
+(read t r)
+```
+This function reads the value before or after a transaction, where 't' is a table or a string, and 'r' is a string. This function can only be used in properties.
+
+## Options
+
+N/A
+
 ## Property validation
 
-The `read` function ensures the validity of its arguments as part of its operation. Before a `read` operation is executed, it validates the table and key provided as arguments. 
+The `read` function in Pact can be used in property testing for invariant enforcement. By enabling the retrieval of database records, it aids in validating various conditions that may be defined within a contract. For example, ensuring that a user's balance does not fall below a certain value or that a transferred amount does not exceed the sender's balance. It can also be used to check for attribute existence in a database record.
 
-The table must be of a recognized data structure that supports key-value pairs, while the key provided must exist within the specified table. If these conditions are not met, the `read` operation will fail and return an error.
+`read` performs a lookup in the specified table with the provided key. If the key does not exist, the function will result in failure. It's important to note that invalid table or key arguments will also cause the function to fail.
 
-In case of `read-before` or `read-after` function, the transaction time is verified to be either "before" or "after".
+In terms of property validation, the arguments passed to the `read` function need to fulfill the requirement of referencing an existing table and key. Particularly, the table needs to be a valid object with the `{row}` format, and the key needs to be of a `string` type.
 
-In most of the examples, there's also enforcement that the user or account associated with the key has the correct permissions or matches other necessary conditions in order to proceed with the operation. 
+Since `read` function inherently checks whether the provided arguments reference an existing record, it implicitly performs property validation, and could be used to ensure correctness of your contract's state.
 
-Please remember, error messages should be descriptive to help the users debug any issues swiftly. 
+## Gotchas
 
-This validation enhances the reliability of the system by ensuring proper data handling and access control.
+Here are some of the potential issues or confusion points that users may encounter whilst using the read function:
 
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+1. Non-existent keys: If you attempt to read a key that doesn't exist in the TABLE, the read operation will return an error. Always ensure that the key you wish to read is present in the TABLE.
 
+2. Type mismatches: The read function requires you to pass an object key and a string for the TABLE. Be sure to input the arguments according to the specified types; otherwise, a type mismatch error will occur.
 
-Could not generate content.
+3. Transaction time: The `time` argument in the legacy documentation pertains to reading a value before or after a transaction. This is specific to properties, and if used elsewhere, it might not function as intended.
+
+Please note that the behavior might vary depending on the context in which the `read` function is used. Always refer back to the corresponding section in the documentation for the specific use case you are working with. 
+
+During testing or development, consider using test cases to confirm the functionality of the `read` function within your specific use case.
+

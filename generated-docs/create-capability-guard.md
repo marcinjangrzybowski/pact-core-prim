@@ -1,60 +1,73 @@
 # create-capability-guard
 
-## 
-Generate a clear and concise explanation of the basic syntax for your function. This section should contain at least one code snippet demonstrating how to use the function. The code should be provided in the format: 
+## Basic syntax
 
-'''pact
-your function syntax
-'''
+To create a capability guard, use the following syntax:
 
-If your function can be overloaded, provide additional code snippets to reflect its multiple uses. Overall, aim to describe the syntax in a way that is easy to comprehend, including any necessary arguments and acceptable data types.
+```pact
+(create-capability-guard *capability*: bool)
+```
 
+This function takes one argument, a boolean expression representing a capability. 
 
-Could not generate content.
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+For example:
+
+```pact
+(create-capability-guard (BANK_DEBIT 10.0))
+```
+
+In this example, `(BANK_DEBIT 10.0)` is a capability which represents the debit operation from a bank account with the transaction amount being 10.0. The `create-capability-guard` function creates a guard ensuring that this capability is invoked for any subsequent transactions.
+
+## Arguments
 
 | Argument | Type | Description |
+| --- | --- | --- |
+| capability | bool | A boolean expression or a capability that needs to be acquired for the guard to pass. |
 
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
-
-Ensure the number of rows in your table matches the arity of your function. 
-
-
-Could not generate content.
 ## Prerequisites
 
-Before using `create-capability-guard`, you must have a defined capability that you can pass as an argument to the function. This capability is typically defined using Pact's `defcap` syntax and should return a boolean result. If no such capability exists or if the capability evaluation does not yield a boolean result, `create-capability-guard` will not function as expected.
+Before using the `create-capability-guard` function, ensure that the CAPABILITY you want to enforce is defined in your code. This capability is the action that your code is permitted to perform when the guard condition is met. This CAPABILITY is specified as a predicate (a function that returns a boolean value) in the argument of `create-capability-guard`.
 
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+## Return values
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
+The `create-capability-guard` function returns a guard. The returned guard ensures that the specified capability is acquired. This can be useful in contexts where you want to enforce that certain capabilities must be obtained before proceeding with specific operations or transactions.
 
+## Examples
 
-Could not generate content.
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+Below are some examples of how to use the `create-capability-guard` function:
 
-'''pact
-your function usage example
-'''
+1. Using `create-capability-guard` for guard creation with a capability:
 
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
+```pact
+(define-capability BANK_DEBIT (amount:decimal))
+(enforce-guard (create-capability-guard BANK_DEBIT))
+```
 
+In this example, the `create-capability-guard` function creates a guard that ensures the `BANK_DEBIT` capability is acquired.
 
-Could not generate content.
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+2. Usage of `create-capability-guard` within a function:
 
+```pact
+(defun withdraw
+  ( amount:decimal )
+  (with-capability (BANK_DEBIT amount) 
+    (enforce-guard (create-capability-guard BANK_DEBIT)) 
+    (debit-from-account amount)) )
+)
+```
+In this case, `create-capability-guard` is used within the `withdraw` function to enforce the `BANK_DEBIT` capability. 
 
-Could not generate content.
+Note: The above examples assume that the capability and functions like `debit-from-account` are already defined.
+
+## Options
+
+N/A
+
 ## Property validation
 
 N/A
 
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+## Gotchas
 
+N/A
 
-Could not generate content.

@@ -2,71 +2,81 @@
 
 ## Basic syntax
 
-The `select-with-fields` function allows you to execute a database query and return the results as specified fields. Here is the basic syntax for using it:
+To use the `select-with-fields` function, you should follow this basic syntax:
 
 ```pact
-(select-with-fields ['field1 'field2 ...] tablename predicate)
+(select-with-fields ['column-name1 'column-name2 ...] 'table-name)
 ```
 
-In this example, `['field1 'field2 ...]` is the set of fields you want to return. It must be a list of column names represented as strings.
+In the code above, `select-with-fields` is used to project specified columns as a list of objects from a database table. 
 
-`tablename` is the name of the table you want to query. It must be in string format.
+- `'column-name1 'column-name2 ...` is a list of column names you want to project. Each column name must be a symbol.
+- `'table-name` is the name of the database table from which you want to project columns, specified as a string.
 
-`predicate` is a function that specifies the conditions for data retrieval. It should return `true` for the rows you want to select and `false` for the rows you want to exclude.
-
-Here is a more specific example:
+Here is an example:
 
 ```pact
-(select-with-fields ['first_name 'age] 'employees (= 'department "Sales"))
+(select-with-fields ['name 'age] 'people)
 ```
 
-In this example, the function returns the `first_name` and `age` of all employees in the "Sales" department.
+In this example, the `select-with-fields` function will return a list of objects from the 'people' table, each object representing a row and only containing the 'name' and 'age' fields.  
 
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+If you use `select-with-fields` function without any filters and column names, it will return the complete records from the specified table. 
 
-| Argument | Type | Description |
+```pact
+(select-with-fields [] 'people)
+``` 
 
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
+In the above code snippet, `select-with-fields` function will return all records with all fields from the 'people' table.
 
-Ensure the number of rows in your table matches the arity of your function. 
+## Arguments
 
+|  Argument  | Type | Description |
+| --- | --- | --- |
+|  table   | string | Specifies the name of the table where the function will operate on. |
+|   fields  | fields-spec | Reduced field set to be returned by the query. A fields-spec is either a simple field list or an assoc list of pairs with field names and their corresponding column types.|
+|  filter   |  bool | An expression that returns a Boolean value. The filter limits the rows on which the function operates.|
+|  limit   | integer | Limits the number of rows returned by the query. |
+|  columns   |  column-spec | Specifies the columns that the function will return. A column-spec is an association list of column names and column types. |
 
-Could not generate content.
 ## Prerequisites
 
 N/A
 
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+## Return values
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
+The `select-with-fields` function returns a list of objects. The objects in the list correspond to the rows in the database that match the specified condition. Each object in the list contains only the fields specified in the SELECT clause of the function call. If no rows in the database match the condition, the function returns an empty list. This approach can be used to efficiently query a large quantity of data, while only retrieving the necessary fields from the database.
 
+## Examples
 
-Could not generate content.
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+Here are a few examples demonstrating the usage of the `select-with-fields` function:
 
-'''pact
-your function usage example
-'''
+```pact
+(select-with-fields ["name" "age"] "people" (where "age" > 18))
+```
+The above example will select 'name' and 'age' from the 'people' table where age is more than 18.
 
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
+```pact
+(select-with-fields ["title" "author"] "books" (where "year" = 2005))
+```
+In this another example, the function will select 'title' and 'author' from the 'books' table where the publishing year is 2005.
 
+```pact
+(select-with-fields ["address"] "users" (where "username" = "jdoe"))
+```
+This last example selects 'address' from 'users' table where the 'username' is 'jdoe'.
 
-Could not generate content.
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+Please note that `select-with-fields` only returns the selected fields rather than the entire row from the table. Additionally, the list of fields to be selected is always the first argument. The predicate clause `(where ...)` is used to narrow down the rows selected, and it operates similarly to a filter.
 
+## Options
 
-Could not generate content.
-## 
-If your function includes any form of property validation, explain it here. Clearly explain the rules that the function follows to verify its arguments and error conditions. If there is no property validation involved in your function, respond with 'N/A'.
+N/A
 
+## Property validation
 
-Could not generate content.
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+N/A
 
+## Gotchas
 
-Could not generate content.
+'N/A'
+

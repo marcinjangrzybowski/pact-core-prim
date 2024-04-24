@@ -2,67 +2,82 @@
 
 ## Basic syntax
 
-The `sort-object` function is used to sort an array of complex objects. The function takes a single parameter: a string representing the property of objects used to sort the array.
+The `sort-object` function in PowerShell allows you to sort objects by their properties in ascending or descending order. The basic syntax of this function is:
 
-Here is the basic syntax:
-
-```pact
-(sort-object *propertyname*:string [list])
+```powershell
+Sort-Object [-Property] ObjectProperty [[-Descending] | [-Ascending]] 
+[[-Culture string]] [-CaseSensitive] [-InputObject psobject] [CommonParameters]
 ```
 
-You need to replace `*propertyname*` with the name of the object's property you want to use for sorting. The function will return a sorted list of objects based on the specified property.
+- The `-Property` parameter specifies the property or properties that you wish to sort by. If you don't specify `-Property`, PowerShell uses the default sort properties as defined by the object type.
+- The `-Descending` and `-Ascending` switches order the objects in ascending (lowest to highest) or descending (highest to lowest) order respectively. If neither is specified, PowerShell defaults to ascending order.
+- The `-Culture` string parameter sets the cultural/country configuration for the sort operation.
+- The `-CaseSensitive` switch makes the sort order case-sensitive; by default the sort order is case-insensitive.
+- The `-InputObject` parameter specifies the object to be sorted. If this parameter is absent, the function will take its input from the pipeline.
 
-If the function can sort objects based on multiple properties, you can provide multiple property names separated by a comma:
+Multiple properties can be sorted at once by providing a comma-separated list of property names to `-Property`. The function will then sort by the first property, and in case of ties, by the next property, and so on.
 
-```pact
-(sort-object *propertyname1*, *propertyname2*:string [list])
+```powershell
+Sort-Object -Property Property1, Property2 -Descending
 ```
 
-In the above syntax, the function will first sort objects based on `propertyname1`. If two or more objects have the same `propertyname1` value, the function will use `propertyname2` to sort them.
+Please consult the 'Arguments' and 'Examples' sections for more details about these parameters and their usage.
 
 ## Arguments
 
 | Argument | Type | Description |
 | --- | --- | --- |
-| Object | List or Hashtable | The object that needs to be sorted. It can either be a list of values or a hashtable of key-value pairs. |
-| Property | String (optional) | The property that should be used for sorting if the object is a hashtable. This is optional and should only be provided if the object is a hashtable. |
-| Ascending | Boolean (optional) | A flag to determine the sort order. If true, the object will be sorted in ascending order. If false or not provided, the object will be sorted in descending order. |
-| CaseSensitive | Boolean (optional) | A flag to determine whether the sort should be case-sensitive or not. If true, the sorting will be done considering the case difference. If false or not provided, the sort will ignore the case difference. |
+| InputObject | array | Specifies the input object that will be sorted. This is usually a collection of objects. |
+| Property | string/array | Specifies the property(-ies) that will be used as a basis for sorting the InputObject. If an array of properties is provided, objects are sorted by the first property first, then the second property, and so on. |
+| Descending | boolean | Optional. If set to 'true', the objects will be sorted in descending order based on the property(-ies) provided. If 'false' or not provided, the sorting order is ascending. |
+| CaseSensitive | boolean | Optional. If set to 'true', case of string properties will be taken into account for sorting. If 'false' or not provided, case is ignored while sorting. |
 
+## Prerequisites
 
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+N/A
 
+## Return values
 
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+The `sort-object` function returns a collection sorted according to the key or keys specified in the function invocation. The return type will be the same as the type of the input collection - an array or an object. If no keys are provided, the return value will be the input collection sorted in its default order. The sorted collection can be useful in scenarios where the data order matters, such as when you need to display data to users or perform subsequent operations that rely on this certain order.
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
-
-
-Could not generate content.
 ## Examples
 
-Here are few examples demonstrating the use of `sort-object` function:
+Here are a few examples using the `Sort-Object` function in different scenarios:
+
+1. Sorting a list of integers in ascending order:
 
 ```pact
-(sort-object "age" [{ "name": "Alice", "age": 27 },{ "name": "Bob", "age": 29 },{ "name": "Charlie", "age": 22 }])
+(sort-object [3 1 4 1 5])
+[1 1 3 4 5]
 ```
 
-In above example, `sort-object` sorts the list of objects based on the key `"age"`. So the output shall present the objects sorted by ages in ascending order.
+2. Sorting a list of integers in descending order by specifying the `-Descending` parameter:
 
 ```pact
-(sort-object "age" DESCENDING [{ "name": "Alice", "age": 27 },{ "name": "Bob", "age": 29 },{ "name": "Charlie", "age": 22 }])
+(sort-object [3 1 4 1 5] -Descending)
+[5 4 3 1 1]
 ```
 
-Just by adding `DESCENDING`, `sort-object` can also sort in descending order. Here, the objects will be sorted by age in descending order.
+3. Sorting a list of strings:
 
 ```pact
-(sort-object "name" [{ "name": "Alice", "age": 27 },{ "name": "Bob", "age": 29 },{ "name": "Charlie", "age": 22 }])
+(sort-object ["apple", "orange", "banana"])
+["apple", "banana", "orange"]
 ```
 
-Here in this example we are sorting based on names, hence objects will be sorted alphabetically by names.
+4. Sorting a list of objects based on a property:
+
+```pact
+(sort-object [{name: "John", age: 30}, {name: "Jane", age: 25}, {name: "Jack", age: 35}] -Property age)
+[{name: "Jane", age: 25}, {name: "John", age: 30}, {name: "Jack", age: 35}]
+```
+
+5. Sorting a list of objects based on a property in descending order:
+
+```pact
+(sort-object [{name: "John", age: 30}, {name: "Jane", age: 25}, {name: "Jack", age: 35}] -Property age -Descending)
+[{name: "Jack", age: 35}, {name: "John", age: 30}, {name: "Jane", age: 25}]
+```
 
 ## Options
 
@@ -74,5 +89,16 @@ N/A
 
 ## Gotchas
 
-N/A
+## Gotchas
+
+- `sort-object` will treat all inputs as a collection, even if the input only contains a single object. It means if you pass a singleton to `sort-object`, it will be interpreted as a collection with one item. 
+- The `sort-object` function will sort the items in ascending order by default. If you wish to sort in descending order, you must explicitly specify it using the `-Descending` parameter.
+- The sort operation is case-insensitive by default. To perform a case-sensitive sort, use the `-CaseSensitive` parameter.
+- If multiple objects have the same sort value, `sort-object` will retain their original relative ordering (stable sorting).
+- When sorting on multiple properties, `sort-object` will first sort on the first property, then the second, etc. Keep in mind that sort order of subsequent properties only comes into play when values of previous property are equal.
+- Null or empty properties will be sorted at the start of the sorted collection.
+- Incorrect use of `-Property` parameter could lead to unexpected results. Verify whether the given property really exists in the objects to sort.
+- Sorting is not done in-place. `sort-object` will return a new sorted collection, leaving the original collection unmodified.
+  
+Always remember that not every object can be sorted, the objects to be sorted should have a sensible ordering defined.
 

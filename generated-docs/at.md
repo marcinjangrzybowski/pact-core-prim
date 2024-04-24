@@ -1,72 +1,109 @@
 # at
 
-## 
-Generate a clear and concise explanation of the basic syntax for your function. This section should contain at least one code snippet demonstrating how to use the function. The code should be provided in the format: 
+## Basic syntax
 
-'''pact
-your function syntax
-'''
+The basic syntax of the `at` function is used to select a value from a list or key-value pair in an object. It can be defined by its two main use-cases:
 
-If your function can be overloaded, provide additional code snippets to reflect its multiple uses. Overall, aim to describe the syntax in a way that is easy to comprehend, including any necessary arguments and acceptable data types.
+1. Selecting an item from a list by its index. Here is the basic syntax:
 
+    ```pact
+    (at *index* *list*)
+    ```
 
-Could not generate content.
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+    Where:
+    - *index* is an integer specifying the zero-based position of the item in the list.
+    - *list* is a list of values.
+
+2. Selecting a value from an object by its key. Here is the basic syntax:
+
+    ```pact
+    (at *key* *object*)
+    ```
+
+    Where:
+    - *key* is a string that matches one of the keys in the object.
+    - *object* is an object containing key-value pairs.
+
+In both cases, the `at` function will return the value corresponding to the inputted index or key.
+
+Here are some example usages:
+
+Indexing into a list:
+
+```pact
+(at 2 ["apple" "banana" "cherry" "date"])  // Returns "cherry"
+```
+
+Getting a value from an object:
+
+```pact
+(at "name" { "name" : "John", "age" : 30 })  // Returns "John"
+```
+
+## Arguments
 
 | Argument | Type | Description |
-
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
-
-Ensure the number of rows in your table matches the arity of your function. 
-
-
-Could not generate content.
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+| --- | --- | --- |
+| index | Integer | The index location in the list from where the value needs to be retrieved. Indexing starts at 0. |
+| key | String | The key from the object to retrieve the value from. This is typically used when the collection is an object or a map. |
+| list | [Any] | The list of values from which a value needs to be retrieved using its index position. |
+| object | Object | The object from which a value with matching key will be retrieved. |
 
 
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+## Prerequisites
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
+There are no direct prerequisites for using the `at` function. However, before using, ensure that the collection (list or object) you want to apply the `at` function to is properly defined and populated. The index or key you are targeting should also be present within the collection.
 
+## Return values
 
-Could not generate content.
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+The `at` function returns the value found at the specified index or using the specified key. The return type isn't specified, as it's utterly dependent on the data type of the elements in the collection that we're operating on. For example, if we're trying to retrieve a value from a list of integers using an integer index, then the return value will be an integer. If we're operating on a collection of strings, the return value will be a string. In the case of key-based lookup in an object, again the return data type will be the same as that of the value paired with a given key.
 
-'''pact
-your function usage example
-'''
+## Examples
 
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
+Here are some examples showing the usage of the `at` function:
 
+Get an element at a particular index in a list:
 
-Could not generate content.
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+```pact
+(at 1 [1 2 3])
+```
+In this example, it will return `2` as it lies at the first index in the list `[1 2 3]`.
 
+Access a value of a certain key in an object:
 
-Could not generate content.
+```pact
+(at "bar" { "foo": 1, "bar": 2 })
+```
+In this example, it returns the value `2` which is the value corresponding to the key `bar` in the object `{ "foo": 1, "bar": 2 }`.
+
+Use as a projection within properties for data validation:
+
+```pact
+(property (< (at "age" data) 18))
+```
+This example will verify if the value associated with the key `age` in object `data` is less than 18. The function `at` is used here to project the value of "age" from the object for comparison.
+
+## Options
+
+N/A
+
 ## Property validation
 
-The `at` function in pact supports property checking, which can be particularly useful when asserting invariants in your code. 
+The `at` function can be used for property validation by specifying it as an invariant or a property in your contract. This is especially useful to ensure that the specified index or key exists within the collection before running the contract, thus minimizing potential runtime errors. It is important to note that the function itself does not have any built-in validation checks and will fail if an invalid index or key is specified. For example, if you were to specify an index that is not within the bounds of the list or a key that does not exist within the object, the `at` function would return an error. Therefore, it is recommended to include necessary checks in your code prior to calling this function to ensure that the specified index or key is valid. 
 
-When specifying an invariant or a property, you can leverage the `at` function to index a list and confirm whether a specific condition holds true. As the `at` function will return the value at the specified index, you can directly compare this value in your property or invariant.
-
-For example, if you are using the `at` function within a `(property (NAME))` formulation, you can ensure that a property with the name `NAME` holds true for all values in the list at the given index. Similarly, this function can be used in invariants to assert a condition on the values indexed in a list.
-
-An error is thrown if an invalid index type for the collection is provided or the index is out of the boundary of the list or does not exist in the object. In such cases, `at` function ensures that the index and the collection are correctly matched and valid, serving as a form of argument validation.
+Additionally, using `at` as part of a property or invariant would allow for testing code. This can ensure the code has handled boundary conditions correctly or that certain properties about the collection remain true after the execution of your contract. For example, you might specify a property that the length of the collection stays the same after certain operations, and use `at` to check values within the collection.
 
 ## Gotchas
 
-When using the `at` function, a few things to be aware of:
-- `at` function uses zero-based indexing for lists. That's why `(at 0 [1 2 3])` will return `1` and not `2`.
-- For objects, `at` retrieves values based on your specified key. If this key does not exist in your object, an error will be raised. Make sure the key exists in the object before you use it.
-- `at` returns the value at that index or key whether it is `null` or `undefined`. You may need to add condition to handle these values. 
-- If the index number is out of range, `at` returns `null`, not an error. This can be a pitfall, as you might expect an error to be returned when you request an index that is out of range.
-- Make sure the index is integer and the key is string. Feeding wrong type will cause an error.
-- The data type of the output will always correspond to the data type of the item at the index or key you specify. This could potentially cause issues if you're expecting a specific data type to be returned, but the actual type of the value at the given index or key is different.
+While using the `at` function, it's crucial to keep in mind the indexing behavior and type checks. Here are a few potential pitfalls:
+
+- Index Starts from Zero: When retrieving from lists, note that the indexing starts from 0, similar to most programming languages. So, the first element would be retrieved using the index 0. Using the index equal to the list size will result in an error as that index does not exist.
+
+- Understanding 'at' with key: The `at` function can also get the value from an object using a string key. When using a key, ensure that the key exists in the object. If the key does not exist within the object, it will result in an error.
+
+- 'at' on an empty list or object: Be careful when using `at` on empty list or objects. When you are unsure whether a list or object includes any elements, it is good practice to check its size before using `at`.
+
+- Type Check: `at` function will not do any implicit type conversions. Therefore, confirm that the type of the index is `integer` for list and `string` for object to ensure no unexpected error occurs. 
+
+Always ensure that the index or key used with the `at` function is valid to prevent runtime errors.
 

@@ -2,64 +2,74 @@
 
 ## Basic syntax
 
-The `read-msg-default` function retrieves a value from an input message or returns a provided default value if the key isn't found in the message.
-
-In basic syntax, you can use `read-msg-default` in the following way:
+To use the `read-msg-default` function, use the following basic syntax:
 
 ```pact
-(read-msg-default *key*:string *default-value*)
+(read-msg-default key:Key value)
 ```
 
-This function accepts two arguments:
+In this syntax:
 
-- `*key*`: This is a string value, represent the key to retrieve from the message.
-- `*default-value*`: This is the default value to be returned if the key is not present in the message.
+- `key` is a Key that you specify, which can be any acceptable data type.
+- `value` is the default value that function returns if the message does not contain the key.
 
-Note that the `*default-value*` can be of any datatype as per the requirements of the function.
-
-Let's illustrate with a couple of examples:
+Here is an example:
 
 ```pact
-(read-msg-default "email" "default.email@example.com")
+(defschema Message
+  "Schema representing a simple message with a title and body."
+  (title:string
+   body:string))
+
+(defun process-message (msg:Message)
+  "Processes a message, defaults title if not present."
+  (let ((title (read-msg-default 'title "No Title" msg))
+        (body (read-msg-default 'body "No Body" msg)))
+    (print title)
+    (print body)))
 ```
 
-In this example, the function will look for the `email` key in the message, and if it doesn't find it, it will return the default value "default.email@example.com".
-
-```pact
-(read-msg-default "age" 20)
-```
-
-In this example, the function will look for the `age` in the message, and if it isn't present, it will return the default value `20`.
+In this example, if the `msg` object doesn't contain `'title'` or `'body'`, the function `process-message` will print "No Title" and "No Body" respectively.
 
 ## Arguments
 
 | Argument | Type | Description |
 | --- | --- | --- |
-| key | string | Specifies the key of the message data you want to retrieve. |
-| default | any | If the key is not found or its associated value is `null`, the `read-msg-default` function will return this default value. |
+| key | string | The key for the specific value you want to retrieve |
+| default | string | The default value to return in case the key does not exist in the message |
 
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+## Prerequisites
 
+N/A
 
-Could not generate content.
 ## Return values
 
-The `read-msg-default` function returns the value associated with the provided key from the message data. If no such key exists within the message data, it instead returns the default value provided. This return value is useful in cases where the presence of certain attributes isn't guaranteed in the message data. The data type of the return value can vary and is contingent on the data type of the input default value and the value associated with the key in the message data.
+The `read-msg-default` function returns the value associated with the given key from the message data. The key for this data is case-sensitive. If no value is found for the provided key, the function returns a default value specified by the user. The return data type depends on the data associated with the key or the default value if no data exists for the key. This return value assists in ensuring that there are no null or undefined values causing unexpected errors in the program by providing a substitute value for missing data.
 
 ## Examples
 
-```pact
-(read-msg-default "color" "green")
-```
-In this example, `read-msg-default` is called with key "color" and a default value of "green". If the message does not contain a "color" key, then "green" is returned.
+Here are some example scenarios for the `read-msg-default` function:
+
+Scenario 1: Return a default value when the key does not exist in the message
+
+The `read-msg-default` function is particularly useful when you want to provide a default value for a key that might not be present in the message. Here's an example that showcases this:
 
 ```pact
-(read-msg-default "age" 30)
+(read-msg-default "non-existing-key" "This is a default value")
 ```
-In this example, `read-msg-default` is looking for a value associated with the 'age' key in a message. If 'age' is not found within the message, the function will return the default value which is '30'.
 
-These examples illustrate the use of read-msg-default function where the first argument is the key to look for in the message, and the second argument is the default value to return if the key is not found.
+When the key "non-existing-key" does not exist in the message, the function returns: "This is a default value".
+
+Scenario 2: Return the available value for a key in the message
+
+When the key is available in the message, the `read-msg-default` function returns the value of the key, ignoring the default value. Here's an example:
+
+```pact
+(read-msg-default "existing-key" "This is a default value")
+```
+
+When the key "existing-key" is present in the message with a value "Available value", the function returns: "Available value".
+
 
 ## Options
 
@@ -71,5 +81,5 @@ N/A
 
 ## Gotchas
 
-'N/A'
+N/A
 

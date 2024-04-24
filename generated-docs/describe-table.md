@@ -1,61 +1,63 @@
 # describe-table
 
-## 
-Generate a clear and concise explanation of the basic syntax for your function. This section should contain at least one code snippet demonstrating how to use the function. The code should be provided in the format: 
+## Basic syntax
 
-'''pact
-your function syntax
-'''
+The `describe-table` function is used to retrieve metadata about a specified table in the form of an object. The object contains 'name', 'hash', 'blessed', 'code', and 'keyset' fields. 
 
-If your function can be overloaded, provide additional code snippets to reflect its multiple uses. Overall, aim to describe the syntax in a way that is easy to comprehend, including any necessary arguments and acceptable data types.
+The basic syntax of the function is as follows:
 
+```pact
+(describe-table *table*:{row})
+```
 
-Could not generate content.
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+In the syntax,arg `*table*` is the specific table you want to describe.
+
+For example, if you want to describe a table named 'accounts', you would use the following syntax:
+
+```pact
+(describe-table accounts)
+```
+
+Important: The function can be used only at the top level and will fail if used within a module.
+
+## Arguments
 
 | Argument | Type | Description |
-
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
-
-Ensure the number of rows in your table matches the arity of your function. 
+| --- | --- | --- |
+| table | table:{row} | Represents the table you want to retrieve metadata for. The function will return an object with 'name', 'hash', 'blessed', 'code', and 'keyset' fields derived from this table. Note: This function is top level only and will fail if used in module code. |
 
 
-Could not generate content.
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+## Prerequisites
 
+The `describe-table` function must be used in top-level code only. It cannot be used within module code. This is to ensure it is only used when necessary to retrieve metadata for a specified table. Users must have access rights to the table they wish to describe. Additionally, the table must exist, otherwise the function will fail to retrieve the metadata.
 
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+## Return values
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
+The `describe-table` function returns an object containing metadata for the given table. The returned object includes the following fields: 'name' (the name of the table), 'hash' (the unique identifier of the table), 'blessed' (marking whether or not the table is blessed), 'code' (the code that manages the table), and 'keyset' (the set of keys for the table). This returned information can be useful when you need to access detailed information about a specific table within the code execution context.
 
+## Examples
 
-Could not generate content.
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+Here are some example usages of the `describe-table` function:
 
-'''pact
-your function usage example
-'''
+To get the metadata for a table named `accounts`:
 
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
+```pact
+(describe-table accounts)
+```
 
+This would return an object with 'name', 'hash', 'blessed', 'code', and 'keyset' fields for the 'accounts' table.
 
-Could not generate content.
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+Please note, `describe-table` is top-level only and this function will fail if used in module code.
 
+## Options
 
-Could not generate content.
-## 
-If your function includes any form of property validation, explain it here. Clearly explain the rules that the function follows to verify its arguments and error conditions. If there is no property validation involved in your function, respond with 'N/A'.
+N/A
 
+## Property validation
 
-Could not generate content.
+N/A
+
 ## Gotchas
 
-The `describe-table` function can only be used at the top level and will throw an error if you try to use it within module code. This means it cannot be embedded within other functions for more complex operations. Keep this in mind when structuring your Pact code. A good practice is to use this function to gain insight about the table metadata and then proceed to use other table-related operations accordingly.
+The primary gotcha of `describe-table` is its scope of use. It can only be used at the top level. Meaning, invoking it within a module code would result in a failure. This might seem limiting and counter-intuitive especially when one needs to inspect a table metadata from within a module. Therefore, while designing your pact programs, you should place any `describe-table` function calls at the top level to avoid this issue.
 

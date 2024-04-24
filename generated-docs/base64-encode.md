@@ -1,61 +1,76 @@
 # base64-encode
 
-## 
-Generate a clear and concise explanation of the basic syntax for your function. This section should contain at least one code snippet demonstrating how to use the function. The code should be provided in the format: 
+## Basic syntax
 
-'''pact
-your function syntax
-'''
+The basic syntax for the `base64-encode` function in Pact programming language is as follows:
 
-If your function can be overloaded, provide additional code snippets to reflect its multiple uses. Overall, aim to describe the syntax in a way that is easy to comprehend, including any necessary arguments and acceptable data types.
+```pact
+(base64-encode *string*)
+```
 
+This function take a string as argument and returns its base64 representation.
 
-Could not generate content.
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+Here is an example:
+
+```pact
+(base64-encode "hello world!")
+```
+
+This will output: `"aGVsbG8gd29ybGQh"` - which is the unpadded base64 encoded representation of the string "hello world!".
+
+## Arguments
 
 | Argument | Type | Description |
+| --- | --- | --- |
+| STRING | string | Specifies the string you want to encode to unpadded base64. |
 
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
-
-Ensure the number of rows in your table matches the arity of your function. 
-
-
-Could not generate content.
 ## Prerequisites
 
 N/A
 
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+## Return values
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
+The `base64-encode` function returns a string that represents the base64 encoded version of the provided string. This encoding helps to ensure that the data remains intact without modification during transport. The returned base64 string does not have any padding.
 
+## Examples
 
-Could not generate content.
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+The following examples demonstrate how to use the `base64-encode` function with different strings:
 
-'''pact
-your function usage example
-'''
+If you want to encode a simple text string like "hello world!", you can do so as follows:
 
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
+```pact
+(base64-encode "hello world!")
+"aGVsbG8gd29ybGQh"
+```
 
+Or for "Lorem ipsum", you would have:
 
-Could not generate content.
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+```pact
+(base64-encode "Lorem ipsum")
+"TG9yZW0gaXBzdW0="
+```
 
+For an empty string, this function will return an empty string as well:
 
-Could not generate content.
-## 
-If your function includes any form of property validation, explain it here. Clearly explain the rules that the function follows to verify its arguments and error conditions. If there is no property validation involved in your function, respond with 'N/A'.
+```pact
+(base64-encode "")
+""
+```
 
+## Options
 
-Could not generate content.
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+N/A
 
+## Property validation
 
-Could not generate content.
+N/A
+
+## Gotchas
+
+1. `base64-encode` does not implicitly handle encoding of types other than string. Ensure you convert numeric or complex data types to strings before encoding.
+2. The function returns an unpadded base64 string, different from typical base64 encoding that includes padding. Take note of this while decoding or initializing this value elsewhere, or an error may be thrown.
+3. Error might be thrown if you input null or array as an argument to the `base64-encode` function. Always ensure that your input is a valid string.
+4. Encoding does not automatically manage any character sets or encodings other than UTF-8. Ensure the string is UTF-8 compatible to avoid unexpected characters or corrupted Base64.
+5. Empty strings are valid inputs but will output empty Base64 strings. If this behavior is not desirable, implement appropriate validation before using `base64-encode`.
+6. `base64-encode` won't encrypt or securely hide your data and the output can be easily decoded. Do not use this function expecting confidentiality for sensitive data.
+

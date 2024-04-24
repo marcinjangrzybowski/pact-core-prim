@@ -1,62 +1,92 @@
 # fold-db
 
-## 
-Generate a clear and concise explanation of the basic syntax for your function. This section should contain at least one code snippet demonstrating how to use the function. The code should be provided in the format: 
+## Basic syntax
 
-'''pact
-your function syntax
-'''
+The `fold-db` is a function used to select rows from a given table, using a query (qry) as a predicate with both key and value. This predicate is used to accumulate the results that meet the predicate condition in a consumer function. The basic syntax is shown below:
 
-If your function can be overloaded, provide additional code snippets to reflect its multiple uses. Overall, aim to describe the syntax in a way that is easy to comprehend, including any necessary arguments and acceptable data types.
+```pact
+(fold-db *table* *qry* *consumer*)
+```
 
+- `*table*` is the table from which rows are selected.
+- `*qry*` is a function that takes two inputs: a string key and an object value, and returns a boolean. It determines which rows match the requisite condition.
+- `*consumer*` is a function that takes two inputs (similar to `*qry*`) and outputs the transformation you wish to apply to each selected row. The result is a list of such transformations.
+    
+Here's a sample implementation:
 
-Could not generate content.
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+```pact
+(let*
+  ((qry (lambda (k obj) true)) ;; select all rows (assume *qry* is a function that when applied, returns true for all rows. 
+  (f (lambda (k obj) [(at 'firstName obj), (at 'b obj)])) ;; transforms each row (or obj) by selecting the 'firstName' and 'b' fields.
+ )
+ (fold-db people qry f)
+)
+```
+In the above example, `fold-db` is applied to a 'people' table, where the query function (qry) selects all rows, and the consumer function (f) transforms or gathers the 'firstName' and 'b' field from each row.
+
+## Arguments
 
 | Argument | Type | Description |
+| --- | --- | --- |
+| table | table:<{row}> | Specifies the name of the database table you want to operate on. |
+| qry | function: a:string b:object:<{row}> -> bool | Specifies the predicate function used for selecting rows from the table. It should take a key and a value, and return a boolean result. |
+| consumer | function: a:string b:object:<{row}> -> <b> | Specifies the function that should be used to process the selected rows. It should take a key and a value, and return a result of any type.
 
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
+## Prerequisites
 
-Ensure the number of rows in your table matches the arity of your function. 
+N/A
 
+## Return values
 
-Could not generate content.
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+The `fold-db` function returns a list of accumulations as the result of the query. The type of the returned values depends on the consumer function used; it could be of any data type that the consumer function is intended to return. The purpose of these returned values is to hold the processed information of selected rows from the table that meet the criteria set by the query function. These returned values prove useful in contexts where you want to execute an operation on each row of a certain table and collect the results.
 
+## Examples
 
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+Below are a few examples demonstrating the use of the `fold-db` function:
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
+Example 1: This example selects all rows from the people table and returns a list of first names and last names.
 
+```pact
+(let*
+  (
+   (qry (lambda (k obj) true)) ;; select all rows
+   (f (lambda (k obj) [(at 'firstName obj), (at 'lastName obj)]))
+  )
+  (fold-db people qry f)
+)
+```
 
-Could not generate content.
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+Example 2: This example selects all rows where the zipCode is '90210' from an addressBook table and returns a list of address and cities.
 
-'''pact
-your function usage example
-'''
+```pact
+(let*
+  (
+   (qry (lambda (k obj) (= (at 'zipCode obj) "90210"))) ;; select rows where zipCode is '90210'
+   (f (lambda (k obj) [(at 'address obj), (at 'city obj)]))
+  )
+  (fold-db addressBook qry f)
+)
+```
 
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
+Please note that in these examples, `people` and `addressBook` are tables and `qry` is a function that takes a key and a `{row}` object and returns a boolean. `f` is a function that also takes a key and a `{row}` object and returns a `<b>`. Both `qry` and `f` are used as arguments in `fold-db`.
 
+## Options
 
-Could not generate content.
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+N/A
 
+## Property validation
 
-Could not generate content.
-## 
-If your function includes any form of property validation, explain it here. Clearly explain the rules that the function follows to verify its arguments and error conditions. If there is no property validation involved in your function, respond with 'N/A'.
+The `fold-db` function doesn't inherently include property validation. Its functionality is dependent on the lambda functions passed as `qry` and `consumer` arguments. The `qry` function acts as a filter determining which rows from the table will be considered in the folding operation. The `consumer` function defines how each selected row is processed and aggregated. Any necessary property validation should be included within these passed functions depending on specific requirements. If invalid arguments are provided or the specified table does not exist, `fold-db` will return an error. Validation for the `qry` predicate and `consumer` functions should be handled as necessary in their respective definitions. 
 
+## Gotchas
 
-Could not generate content.
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+1. **Selection of Rows**: `fold-db` selects rows from the table using a predicate. It means that `fold-db` does not read the entire database at once but operates on a row-by-row basis. If you need to perform operations that involve multiple rows or the entire table, `fold-db` may not be the most efficient choice.
 
+2. **Output Ordering**: The output of `fold-db` is sorted by the ordering of keys. It is not sorted based on any criteria related to the values. Users should not expect the output to be sorted in any other order unless they have explicitly managed the key values to enforce a certain order.
 
-Could not generate content.
+3. **Use of `at` in Consumer**: As seen in the examples, the `at` function is often used within the consumer to select certain fields from the database objects. Be careful to only use valid keys for `at` as the consumer does not perform any key validation.
+
+4. **Type Mismatch**: The input and output types should be carefully matched. For example, if your consumer function is designed to produce a list of strings, but your query or table will potentially result in a non-string value, you may encounter runtime errors or unexpected behavior. 
+
+Remember to ensure the data types align correctly in the `fold-db` function call to avoid type mismatch issues.
+

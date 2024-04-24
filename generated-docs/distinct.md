@@ -2,28 +2,29 @@
 
 ## Basic syntax
 
-The basic syntax for the `distinct` function is as follows:
+The `distinct` function is used to remove duplicate values from a homogeneous list, keeping the order of original values. This function works with single argument which is a list.
+
+Here is the basic syntax:
 
 ```pact
 (distinct [list])
 ```
 
-The `distinct` function accepts a list (homogeneous or heterogeneous) and returns a list with duplicated items removed whilst preserving the original order.
+This function accepts a list of any data type ([]). You simply call `distinct` followed by the list.
 
-Here is an example of how to use the function:
+For example:
 
 ```pact
-(distinct [3 3 2 2 1 1])
+(distinct [3 3 2 1 1 2])
 ```
-This would return `[3 2 1]`.
 
-Please note that the `distinct` function only applies to lists.
+This would return `[3 2 1]`, a list of the distinct values from the original list, preserving their original order.
 
 ## Arguments
 
 | Argument | Type | Description |
 | --- | --- | --- |
-| xs | [a] | A list of homogeneous values from which you want to eliminate duplicates. |
+| values | [a] | A list from which to remove duplicates. The list should contain homogeneous data types. |
 
 ## Prerequisites
 
@@ -31,32 +32,41 @@ N/A
 
 ## Return values
 
-The `distinct` function returns a list containing all the unique elements from the given input list. The elements are returned in their original order from the input list. The return list maintains the same data type as the input list. This function is useful when needing to remove duplicate elements from a list while preserving their initial order.
+The `distinct` function returns a list of values with duplicates removed while preserving the original order. The returned list contains distinct values from the original list. This can be useful in cases where unique instances of all values in a list are needed while maintaining their sequence.
 
 ## Examples
 
-The following examples demonstrate the use of the `distinct` function which returns a list with duplicates removed from a given list:
+The following examples demonstrate the use of `distinct` function:
 
 ```pact
-(distinct [3 3 1 1 2 2])
+distinct [3 3 1 1 2 2]
+```
+Produces:
+```pact
 [3 1 2]
 ```
 
-In this example, the `distinct` function works on a list of numbers. When numbers are duplicated in the list, only the first instance of the number appears in the returned list.
+This function call returns a list of distinct values from the list `[3 3 1 1 2 2]`. The original order of the list is preserved.
+
+Here's another example with strings:
 
 ```pact
-(distinct ["apple" "banana" "apple" "pear" "banana"])
-["apple" "banana" "pear"]
+distinct ["apple" "banana" "apple" "orange" "banana"]
+```
+Produces:
+```pact
+["apple" "banana" "orange"]
 ```
 
-Similarly, in this example, the `distinct` function works on a list of strings. When strings are duplicated in the list, only the first appearance of the string is kept in the returned list.
+In this example, `distinct` function returns a list of distinct strings from the list `["apple" "banana" "apple" "orange" "banana"]`.
+
+The `distinct` function can also be used in invariants or properties like so: 
 
 ```pact
-(distinct [true false true false true])
-[true false]
+(defproperty test-distinct
+  (distinct [4 5 5 6 7] ))
 ```
-
-In this example, the `distinct` function works on a list of booleans. When booleans are duplicated in the list, only the first appearance of the boolean value is kept in the returned list.
+In the example above, the property `test-distinct` checks if the function `distinct` returns a list with distinct values: `[4, 5, 6, 7]`.
 
 ## Options
 
@@ -64,9 +74,19 @@ N/A
 
 ## Property validation
 
-The `distinct` function can be used for property validation in both invariants or properties of your code. By using `distinct`, you can assure that a given list of elements contains only unique values, with all duplicates removed, thus maintaining data integrity. However, no error conditions are explicitly handled by the `distinct` function, so it's up to the calling code to handle these situations. The function only checks for distinct elements in a list and doesn't validate the properties of the elements themselves.
+The `distinct` function can be used within invariants or properties for validation purposes. It aids in ensuring that a specific collection maintains uniqueness among its elements. However, the function does not perform any explicit error checking or validation on the input collection itself - it operates under the assumption that the input is already a valid homogeneous list. In case of invalid or inappropriate input types, the function would yield an error as per the underlying language rules.
 
 ## Gotchas
 
-N/A
+For the `distinct` function, please consider the following:
+
+1. For structured values like lists or objects, the entire structure is considered when determining distinctness. This means that two distinct objects with the same values but different arrangements will not be considered duplicates.
+
+2. The original order of values is preserved in the output list. A new list is returned and the input list will remain unchanged.
+
+3. Bear in mind that `distinct` can only take a homogenous list. Ensure that you are not passing a list of mixed types.
+
+4. `distinct` does not directly support comparison for user-defined data types. Therefore, distinctiveness for these types might not work as expected. 
+
+Remember, the above are potential areas of misunderstood intentions and your code might not misbehave in some scenarios. Always test your code and ensure it’s working as expected!
 

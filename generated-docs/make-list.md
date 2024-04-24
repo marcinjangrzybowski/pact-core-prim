@@ -1,75 +1,79 @@
 # make-list
 
-## 
-Generate a clear and concise explanation of the basic syntax for your function. This section should contain at least one code snippet demonstrating how to use the function. The code should be provided in the format: 
+## Basic syntax
 
-'''pact
-your function syntax
-'''
+The basic syntax for `make-list` is as follows:
 
-If your function can be overloaded, provide additional code snippets to reflect its multiple uses. Overall, aim to describe the syntax in a way that is easy to comprehend, including any necessary arguments and acceptable data types.
+```pact
+(make-list *length*:integer *value*)
+```
 
+This function takes two arguments:
 
-Could not generate content.
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+* `length` is an integer representing the number of times the specified `value` is repeated in the resulting list.
+* `value` is the object that will be repeated in the list.
+
+Here is an example usage of `make-list`:
+
+```pact
+(make-list 4 "foo")
+```
+
+This will produce a list with 4 instances of the string "foo" - `["foo", "foo", "foo", "foo"]`. You can use any data type as the `value` to be repeated.
+
+## Arguments
 
 | Argument | Type | Description |
+| --- | --- | --- |
+| n | integer | This parameter specifies the length of the list to be created. |
+| a | any data type | This is the value which is repeated n times to create the list. |
 
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
+## Prerequisites
 
-Ensure the number of rows in your table matches the arity of your function. 
+N/A
 
+## Return values
 
-Could not generate content.
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+The `make-list` function returns a new list with `n` copies of `a`. The return type can be any list type depending on the type of `a`. This function is useful when you need to generate a list with repeated elements of a given length. For example, if `n` is 5 and `a` is true, then the function will return a list `[true, true, true, true, true]`. If `n` is 3 and `a` is "blue", then the function will return a list `["blue", "blue", "blue"]`. The length of the returned list will always be equal to the integer value specified for `n`. If `n` is 0 or a negative number, the function will return an empty list.
 
-
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
-
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
-
-
-Could not generate content.
 ## Examples
 
-Here are some examples demonstrating the use of `make-list` function:
+The `make-list` function is used to create a new list by repeating a specific value a certain number of times. Below are examples demonstrating the usage of this function. 
+
+This example creates a list of 5 boolean values - `true`.
 
 ```pact
-(make-list 3 "pact")
-["pact" "pact" "pact"]
+(make-list 5 true)
 ```
-
-In this example, a list is created with 3 repeated instances of the string "pact".
-
-Similarly, you could generate a list with repeating integers or booleans:
+Output:
 
 ```pact
-(make-list 5 100)
-[100 100 100 100 100]
+[true true true true true]
 ```
+
+This example creates a list of 3 integers - `10`.
 
 ```pact
-(make-list 4 false)
-[false false false false]
+(make-list 3 10)
 ```
-
-In a case where you would like to generate a list with a value of `null` repeated. For example, you could generate a list of nulls to represent a row of a matrix that hasn't been initialized yet:
+Output:
 
 ```pact
-(make-list 3 null)
-[null null null]
+[10 10 10]
 ```
 
-Note: If you provide a negative integer for the length, `make-list` will return an empty list. For example:
+This example creates a list of 4 strings - "example".
 
 ```pact
-(make-list -1 "test")
-[]
+(make-list 4 "example")
 ```
+Output:
+
+```pact
+["example" "example" "example" "example"]
+```
+
+These examples can be included in property validation checks using the `make-list` function to create expected output lists for invariant or property testing.
 
 ## Options
 
@@ -80,8 +84,24 @@ If your function includes any form of property validation, explain it here. Clea
 
 
 Could not generate content.
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+## Gotchas
 
+The `make-list` function creates a list by repeating the given value. Be careful to not assume that it will create a list with unique values. If a mutable type is given, like a list or an object, the same instance will be referenced in every position of the list - not unique copies of the value.
 
-Could not generate content.
+For example:
+
+```pact
+(make-list 3 [1 2 3])
+[[1 2 3] [1 2 3] [1 2 3]]
+```
+
+The list `[1 2 3]` is repeated in every position. But, it's the same list being referenced, not unique copies.
+
+Also, remember that `make-list` for zero or negative lengths will produce an empty list irrespective of the value, not a list with the value.
+
+```pact
+(make-list -5 true)
+[]
+```
+Here, even though `true` is provided as value, the result is an empty list because the length is negative. Always ensure that the length argument is positive and greater than zero to get a list of the specified length.
+

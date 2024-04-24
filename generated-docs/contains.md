@@ -2,87 +2,110 @@
 
 ## Basic syntax
 
-The `contains` function in Pact can be used in three different ways: checking for values in a list, keys in an object, or substrings in a string. It always returns a boolean value indicating if the value, key, or substring is present. 
+The `contains` function in Pact programming language is used to test whether a given value, key or a string is present in a list, an object or a string respectively. The basic syntax for `contains` is as follows:
 
-Check for a value in a list:
-
-```pact
-(contains *value*:any [<list>])
-```
-
-Check for a key in an object:
+To check if a list contains a certain value:
 
 ```pact
-(contains *key*:string {<object>})
+(contains *value* [list])
 ```
 
-Check for a substring in a string:
+To check if an object has a certain key:
 
 ```pact
-(contains *value*:string "<string>")
+(contains *key* {object})
 ```
 
-In these examples, `*value*` represents the value you are searching for, `<list>` is the list where you are searching for the value, `*key*` is the key you are searching for, `{<object>}` is the object where you are looking for the key, and `<string>` is the string where you are searching for the substring.
-  
-The arguments for `value` can be of any data type when searching in a list, while in the other two usages it should be a string. For the list and object, it can be an expression that evaluates to a list or an object respectively. For string it should be a string data type or an expression that evaluates to a string.
+To check if a string contains a certain substring:
+
+```pact
+(contains *substring* "your-string")
+```
+
+In the above syntax:
+
+- `value` denotes the element that you want to check if it exists in the list.
+- `key` denotes the key that you want to check if it exists in the object.
+- `substring` denotes the string that you want to check if it exists in the larger string.
+
+Please pay close attention to the data types of your arguments while using the `contains` function for the accurate results.
 
 ## Arguments
 
 | Argument | Type | Description |
 | --- | --- | --- |
-| value | `<a>`, `string` | Specifies the item you want to check for its presence. This could be any data type or a string. |
-| list | `[<a>]` | Specifies the list in which you want to check for the presence of the value. |
-| key | `string` | Specifies the key you want to check whether it exists or not in the given object. |
-| object | `object` | Specifies the object where you want to check for the presence of a key. |
-| string | `string` | Specifies the string in which you want to check for the presence of the value. |
+| value | <a> or string | The target value to be checked within the list, object or string. For lists and objects, it can be any type ('a). For strings, it must be a string.  |
+| list | [ <a> ] | Specifies the list where to search for the target value. Applicable for list context.|
+| key | string | Specifies the target key to be checked if exists within the provided object. Applicable for object context. |
+| object | object: <{o}> | Specifies the object where to search for the target key. Applicable for object context. |
+| string | string | Specifies the string where to check the occurrence of the target value. Applicable for string context. |
 
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+## Prerequisites
 
+N/A
 
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+## Return values
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
+The `contains` function returns a boolean data type. The returned value denotes whether the queried element (value or key) is present within the respective collection (list or object) or string. If the element is found, it returns `true`. If the element does not exist, it returns `false`. This allows users to perform existence checks within different types of data structures or strings.
 
+## Examples
 
-Could not generate content.
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+The `contains` function can be used in various scenarios. Here are some of them:
 
-'''pact
-your function usage example
-'''
+```pact
+(contains 2 [1 2 3])
+```
+The above example checks if the number '2' is present in the list '[1 2 3]'. This will return 'true' because '2' is a part of the list.
 
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
+```pact
+(contains 'name { 'name: "Ted", 'age: 72 })
+```
+The next example checks if the string 'name' is a key in the object '{ 'name: "Ted", 'age: 72 }'. This will return 'true' because 'name' is a key in the object.
 
+```pact
+(contains "foo" "foobar")
+```
+The last example checks if the string "foo" is a part of the string "foobar". This also will return 'true' because the string "foo" is contained in the string "foobar".
 
-Could not generate content.
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+```pact
+(enforce (contains target-chain VALID_CHAIN_IDS)
+  "target chain is not a valid chainweb chain id")
+```
+This example is from one of our repositories. It checks if 'target-chain' is present in 'VALID_CHAIN_IDS'. If not, it will enforce the rule that "target chain is not a valid chainweb chain id".
 
+## Options
 
-Could not generate content.
+N/A
+
 ## Property validation
 
-The `contains` function can be used for property checking in invariants or properties of a contract. It validates that a given value is present within a list, object or string.
+The `contains` function can be used for property validation in the context of invariants or property test code as well for checking the presence of a specific element in collections - lists and objects, or substrings in a string. It can be useful in enforcing that a desired value or key is included in the respective collection.
 
-In a list, the function checks if the given value is an element of the list. In an object, it verifies whether a given key exists in the object. For a string, it checks whether the given value (sub-string) is present within the original string.
+For example, in a list or string validation, `(contains value collection)` will return true if the provided `value` is present in the `collection`.
 
-If a violation is detected, it returns `false`, otherwise it returns `true`. 
+In object validation, `(contains key object)` will return true if the `key` is present in the `object`.
 
-In the given code snippets, `contains` is used to enforce that the `target-chain` is included in the `VALID_CHAIN_IDS`. If `target-chain` is not in the list, it will flag an error and display the message "target chain is not a valid chainweb chain id".
+Remember, an error will be thrown if these conditions are not met during the function execution. 
 
-Use the `contains` function for property validation when you need to ensure a specified value is included in your data set during execution of your contract.
+Refer to provided code snippets for examples of practical usage of this function for property validation.
 
 ## Gotchas
 
-When using the function `contains`, one common mistake is not understanding its general functionality across different data types. This function can check whether a list or a string contains a certain value, or if a key is present within an object or map. Knowing the data type and accurate application of this function will aid in avoiding incorrect outputs.
+The `contains` function behaves differently depending on the type of arguments provided. 
 
-For example, if `contains` is used on a list, it checks for the presence of a value, and in the case of a string, it checks for a substring. When used on an object or map, it checks for the presence of a key, not a value.
+- With lists, it checks if a particular element is present in the list.
+- With string, it checks if a specific substring is present within the string.
+- With objects, it checks if a specific key is present in the object.
 
-A key point to remember is that `contains` function is case sensitive, particularly when it is used with strings. Hence, it returns `false` if the cases of the input string and the searching string do not match, even if the characters are identical.
+Passing an incorrect argument type can lead to unexpected behavior or runtime errors. Ensure the 'contain' value and the 'in' value are of correct and compatible types.
 
-Lastly, while the `contains` function supports use in invariants and properties, it is crucial to ensure that the data types are compatible, as the function does not perform any implicit type conversion.
+The function `contains` performs case-sensitive checks. This feature can be a potential pitfall when comparing strings if not handled with care. Make sure that the strings are in the correct case to get the expected result. 
+
+Remember that `contains` works with zero-based index, so it counts from 0 and not from 1. This might lead to off-by-one errors in your implementations if you're coming from a 1-based index environment.
+
+Also, please note that in the use of `contains` to make some certain operations like searching through a list for a match, it might lead to inefficiencies especially with large data sets. So consideration for efficiency should be taken into account when using `contains`.
+
+For property checking, you can use `contains` while specifying an invariant or property to test your code against. 
+
+Finally, remember that `contains` function along with the argument cannot be null. Make sure the arguments provided to the function are always valid and non-null.
 

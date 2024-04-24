@@ -2,75 +2,65 @@
 
 ## Basic syntax
 
-To use the `format` function to interpolate variables into a template, use the following syntax:
+The `format` function is used to replace placeholders denoted by `{}` in a string with the values specified. The function takes in two arguments, a template string and a list of values.
+
+Here is the basic syntax:
 
 ```pact
-(format *template*:string [*vars*:list])
+(format TEMPLATE VARS)
 ```
 
-The `format` function replaces the `{}` in the template string with the respective entries of the vars list.
+- `TEMPLATE`: This is a string that contains one or more `{}` placeholders that you want to replace with specific values. 
+- `VARS`: This is a list of values to replace the placeholders in the template string with. The values in this list are inserted into the template string in the order they appear.
 
 Here is an example usage:
 
 ```pact
 (format "My {} has {}" ["dog" "fleas"])
 ```
-The string "dog" replaces the first `{}` in the template, and the string "fleas" replaces the second `{}`. The function returns the string "My dog has fleas".
 
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+This will output: `"My dog has fleas"` because `"dog"` replaces the first `{}` and `"fleas"` replaces the second `{}` in the template string.
+
+## Arguments
 
 | Argument | Type | Description |
+| --- | --- | --- |
+| Template | string | Specifies the format of the output as a string with `{}` placeholders. |
+| Vars | list | Specifies the values list which will replace the `{}` placeholders in the Template string in the order they are provided. |
 
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
-
-Ensure the number of rows in your table matches the arity of your function. 
-
-
-Could not generate content.
 ## Prerequisites
 
-N/A
+For using the `format` function in Pact, there are no specific prerequisites. Users should just have a basic understanding of the language syntax and data types like strings and lists. This function is built-in and can be accessed directly without needing any specific libraries or modules to be included beforehand.
 
 ## Return values
 
-The `format` function returns a `string` that is the result of interpolating the `vars` into the `template`. The function replaces each `{}` within the `template` with corresponding values from the `vars`. If there are no `{}` in the `template`, the function will return the `template` as is. If there are more `{}` in the `template` than the length of `vars`, the function will return a string with remaining `{}`. This return value can be useful for generating messages or string manipulation that requires template replacements.
+The `format` function returns a formatted string as per the specified template and arguments. The function takes a string as a template and an array to place within the template brackets `{}`. It will replace instances of `{}` in the template string with sequential values from the supplied list. The result is a string where the placeholders in the template are replaced with the corresponding values from the list. This is useful for generating customized string messages or for data representation purposes.
 
 ## Examples
 
-The `format` function can be used in multiple scenarios, as illustrated in the following examples:
-
-1. Simple String Interpolation:
-
-```pact
+'''pact
 (format "My {} has {}" ["dog" "fleas"])
-```
-Expected Output:
-```
 "My dog has fleas"
-```
-
-2. Error handling (In conjunction with the `enforce` function):
-
-```pact
-(enforce (= balance 0.0)
-  (format "Expected balance is 0.0, but received {}" [balance]))
-```
-If `balance` is not 0, it will throw an error message like:
-
-```
-"Expected balance is 0.0, but received 100.0"
-```
-3. Debug information (In conjunction with the `at` function):
+'''
+In this example, the `format` function interpolates the items in the list ["dog", "fleas"] into the placeholders `{}` in the string template "My {} has {}". The result is: "My dog has fleas".
 
 ```pact
-(let
-  ((i (details 'emily)))
-  (format "Account: {} Guard: {}" [(at 'balance i) (at 'guard i)]))
+(format "The sum of {} and {} is {}" [2 3 (+ 2 3)])
+"The sum of 2 and 3 is 5"
 ```
-This will output a formatted string with balance and guard information if 'details' function returns a collection with 'balance' and 'guard' keys.
+In this example, the `format` function interpolates the items in the list [2, 3, (+ 2 3)] into the placeholders `{}` in the string template "The sum of {} and {} is {}". The result is: "The sum of 2 and 3 is 5".
 
-Remember, `format` works with any number of interpolations not just two as shown is most examples. Just make sure the number of items in the vars list is same as the number of `{}` in the string.
+```pact
+(enforce (>= bal amount)
+  (format "Insufficient gas balance: {} < {}" [bal amount]))
+```
+In this example, the `format` function is used in an `enforce` statement. If the balance (`bal`) is less than the amount, `format` will produce an informative error message: "Insufficient gas balance: {bal} < {amount}".
+
+```pact
+(enforce false
+  (format "Reserved protocol guard violation: {}" [r]))
+```
+In this example, `format` is used to create a custom error message indicating a guard violation. The placeholder `{}` is replaced with the value of `r`.
 
 ## Options
 
@@ -78,30 +68,31 @@ N/A
 
 ## Property validation
 
-In the case of `format`, property validation concerns the conformance of the `vars` argument to the placeholders `{}` found in the `template` argument. The function goes through the template and substitutes each placeholder with the respective item from `vars`; an error occurs if there are more placeholders than provided items.
+The `format` function does not include explicit property validation in terms of data types as it inherently accepts a list of any type (as denoted by `[*]`). However, the function conducts an internal validation to ensure the number of placeholders `{}` in the template string corresponds to the number of elements present in the passed list. If there is a mismatch, it will result in an error condition. This is intrinsic validation handled by the function logic itself.
 
-Refer to the following usage scenarios as examples:
+For instance:
+```pact
+(format "My {} has {}" ["dog"])
+```
+The call above will fail as there are more placeholders in the string than the elements in the list. 
 
-- If the `template` is "My dog has {}" and `vars` is ["fleas"], `format` will replace the single `{}` placeholder with "fleas". Hence, it validates smoothly because there's one placeholder and one item to insert. 
-- If the `template` is "My {} has {}" and `vars` is ["dog", "fleas"], again validation is successful because there are two placeholders and two items.
-- However, if the `template` is "My {} has {}" but `vars` is just ["dog"], validation fails because while there are two placeholders, only one item has been provided. 
-- Similarly, if `template` is "My {} has fleas" while `vars` is ["dog", "barked"], validation also fails. There's only one placeholder, but two items were provided.
-
-Therefore, `format` validates by confirming that the number of placeholders in the `template` matches the number of items in the `vars` list, triggering an error if this property is not satisfied.
+Please note that the order is important as well. The elements in the array are injected into the string in the order they appear. If the order does not logically match the sentence structure, it will result in an incorrect or nonsensical output, however, no error will be triggered.
 
 ## Gotchas
 
-`format` is a powerful function for string interpolation in Pact, but there are a couple of points to be aware of:
-
-- `format` uses a position-based replacement mechanism. The order of arguments in the list provided to `format` matters. The first argument in the list corresponds to the first `{}`, the second argument corresponds to the second `{}`, and so on.
+- The `format` function works with string placeholders `{}` within the *template* argument. It doesn't support index-based or named placeholders. If you attempt to use these, it may not result in the expected output.
   
-- The number of `{}` placeholders in the string has to match the number of arguments exactly. If you have more `{}` placeholders than arguments, or more arguments than `{}` placeholders, the `format` function throws an error.
-  
-- The function does not perform automatic type conversion. If a non-string type is provided, `format` does not automatically convert it to a string. For instance, if you pass an integer to `format`, it generates an error since `format` expects string values.
+- List of *vars* should match the number of placeholders in the *template* string. Providing excess or inadequate parameters can lead to incorrect output or runtime failures.
 
-- The `{}` placeholder cannot be escaped. `format` offers no way to include literal `{}` brackets in the resulting string. 
+- The `format` function doesn't provide any sanitization or escaping mechanism for the interpolated values, this might be a security risk in scenarios such as construction of database queries or generation of HTML content. 
 
-- `format` replaces `{}` with the string representation of the corresponding argument, so be aware of how different types are converted to strings. This is especially important for objects and arrays, as their string representation might not be what you expect. 
+- Ensure all interpolated variables can be successfully converted to string format. If not, this may raise a type error during runtime. 
 
-Always test your `format` function calls carefully, especially when dealing with complex arguments or templates.
+- Use caution when formatting large numbers or floating point values as rounding errors can occur.
+
+- If using `format` for error messages, ensure the output does not leak sensitive information, as these might be logged or exposed externally.
+
+- Values in the *vars* list are not type checked and will be implicitly converted to strings, this can lead to unexpected results if not accounted for.
+
+- The `format` function respects object ownership and row-level permissions in the database as expected. However, when used incorrectly, this function can produce SQL statements that unintentionally bypass these security checks.
 

@@ -1,75 +1,60 @@
 # keys
 
-## 
-Generate a clear and concise explanation of the basic syntax for your function. This section should contain at least one code snippet demonstrating how to use the function. The code should be provided in the format: 
+## Basic syntax
 
-'''pact
-your function syntax
-'''
+To get all the keys from a table, use the following syntax:
 
-If your function can be overloaded, provide additional code snippets to reflect its multiple uses. Overall, aim to describe the syntax in a way that is easy to comprehend, including any necessary arguments and acceptable data types.
+```pact
+(keys *table*:table)
+```
 
+Here, *table* is the table from which you want to get the keys. 
 
-Could not generate content.
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+For example:
+
+```pact
+(keys accounts)
+```
+This would return all keys present in the 'accounts' table.
+
+## Arguments
 
 | Argument | Type | Description |
+| --- | --- | --- |
+| table | table: <{row}> | The table from which keys are to be retrieved. It specifies the table you want to retrieve all keys from. |
 
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
+## Prerequisites
 
-Ensure the number of rows in your table matches the arity of your function. 
+N/A
 
+## Return values
 
-Could not generate content.
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+The `keys` function returns a list containing all the keys of the given _table_. The list items are of type `string`. This is particularly useful when iterating over a _table_ or when you need to access all rows (records) in a _table_. Note that the order of keys in the returned list is not guaranteed.
 
-
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
-
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
-
-
-Could not generate content.
 ## Examples
 
 ```pact
-(keys {'a: 1, 'b: 2, 'c: 3}) 
-;Returns ["a", "b", "c"]
+(keys { "Key1": "Value1", "Key2": "Value2", "Key3": "Value3" })
 ```
 
-This example shows the `keys` function called on an object. It returns a list of the keys in that object.
+In the example above, the function call `keys` will return an array of strings containing all the keys of the given object, i.e., `["Key1", "Key2", "Key3"]`.
 
 ```pact
-(keys {}) 
-;Returns []
+(define user-account-table (read-decimal "user-account-table"))
+(keys user-account-table)
 ```
 
-This example demonstrates that calling `keys` on an empty object returns an empty list.
+In this slightly more complex example, we read a table from the database and use the `keys` function to retrieve all the keys in that table. The result will be a list of keys depending on the state of your database.
 
-```pact
-(define user-accounts (accounts))
-(keys user-accounts) 
-;Returns list of all keys in user-accounts if user-accounts is a table type
-```
+## Options
 
-This example shows the `keys` function called to get all keys from a table named `user-accounts`.
+N/A
 
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+## Property validation
 
+N/A
 
-Could not generate content.
-## 
-If your function includes any form of property validation, explain it here. Clearly explain the rules that the function follows to verify its arguments and error conditions. If there is no property validation involved in your function, respond with 'N/A'.
+## Gotchas
 
+The `keys` function does not have any known gotchas or unintuitive behavior associated with it as per the provided legacy documentation and code snippets. It simply returns all keys present in a given table. However, users should be mindful of the fact that the order of keys returned is not guaranteed to be in any specific order.
 
-Could not generate content.
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
-
-
-Could not generate content.

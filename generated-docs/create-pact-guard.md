@@ -1,62 +1,83 @@
 # create-pact-guard
 
-## 
-Generate a clear and concise explanation of the basic syntax for your function. This section should contain at least one code snippet demonstrating how to use the function. The code should be provided in the format: 
+## Basic syntax
 
-'''pact
-your function syntax
-'''
+The basic syntax for the 'create-pact-guard' function is as follows:
 
-If your function can be overloaded, provide additional code snippets to reflect its multiple uses. Overall, aim to describe the syntax in a way that is easy to comprehend, including any necessary arguments and acceptable data types.
+```pact
+(create-pact-guard *pactName*:string)
+```
+
+This function takes one argument:
+
+- pactName: `string` - The unique identifier for the guard predicate that you want to define.
+
+Here is a basic usage example:
+
+```pact
+(create-pact-guard "myPact")
+```
+
+This code creates a guard predicate that captures the results of 'myPact'. The success condition at enforcement time is that at that time 'myPact' must return the same value. This ensures that the guard will only succeed within the multi-transaction identified by the pact id 'myPact'.
 
 
-Could not generate content.
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+## Arguments
 
 | Argument | Type | Description |
-
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
-
-Ensure the number of rows in your table matches the arity of your function. 
+| --- | --- | --- |
+| name | string | Defines the guard predicate by NAME that captures the results of 'pact-id'. |
 
 
-Could not generate content.
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+## Prerequisites
 
+Prerequisites for using `create-pact-guard` are:
 
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+1. A valid identifier in string format. This identifier serves as the name for the guard predicate.
+2. A functioning 'pact-id' operation in the code. The success of the guard predicate created by `create-pact-guard` is tied to the return value of 'pact-id'. If 'pact-id' does not return the expected value, the guard fails.
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
+Please note: 'pact-id' should be returning the same value at the execution time of `create-pact-guard` for the successful condition enforcement. Make sure to understand and maintain this invariant during code development.
 
+## Return values
 
-Could not generate content.
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+The `create-pact-guard` function returns a guard predicate. This guard will be successful if the return value of 'pact-id' at enforcement time matches its return value captured at the time of defining the guard using `create-pact-guard`. This ability to capture and bind the 'pact-id' return state is useful in multi-transaction scenarios, where we need to ensure the unaltered state of a certain pact throughout multiple transactions. In other words, the function essentially returns a "pact passport" that verify the multi-transaction identity through 'pact-id'.
 
-'''pact
-your function usage example
-'''
+## Examples
 
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
+The following examples demonstrate the usage of the `create-pact-guard` function in Pact:
 
+Example 1: Basic use case
+```pact
+(create-pact-guard "pactId")
+```
+In this example, we define a guard with the name "pactId". The success condition of this guard at enforcement time is that the 'pact-id' must return the same value as when it was captured.
 
-Could not generate content.
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+Example 2: In a transaction
+```pact
+(defun transaction ()
+   (let ((my-guard (create-pact-guard "pactId")))
+     (enforce-guard my-guard))
+(transaction)
+```
+In this use case, we created a guard within a transaction. The condition of this guard will hold only within the multi-transaction identified by the pact id.
 
+Please note: The guard is useless on its own and should be used in conjunction with the `enforce-guard` function to enforce the guard's condition.
 
-Could not generate content.
-## 
-If your function includes any form of property validation, explain it here. Clearly explain the rules that the function follows to verify its arguments and error conditions. If there is no property validation involved in your function, respond with 'N/A'.
+## Options
 
+N/A
 
-Could not generate content.
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+## Property validation
 
+For the `create-pact-guard` function, property validation checks if the input argument is a string. If an incorrect datatype, like an integer or a list, is passed instead of a string to the function, it will throw an error. This validation ensures that the guard predicate can be correctly defined by the specified name. The function also ensures that it returns the same value as the 'pact-id' at the time of enforcement. If this is not the case, the function will fail. Therefore, a valid property must always be a string that corresponds to a 'pact-id', and the value of 'pact-id' should remain consistent for the function to succeed.
 
-Could not generate content.
+## Gotchas
+
+When using `create-pact-guard`, beware of the following potential issues:
+
+- This function relies heavily on the results of `pact-id`. Make sure `pact-id` is correctly set and returns the intended values as inconsistencies or errors in `pact-id` will directly impact the guard creation.
+- The function enforces the condition at the point of time `pact-id` is invoked. Any changes in data after that point will not be reflected in the guard created by `create-pact-guard`.
+- If used carelessly, because this function inherently provides security measures by only succeeding within the multi-transaction identified by the pact id, it could inadvertently restrict access or permissions incorrectly. Make sure to thoroughly test all possible conditions and use cases in your pact code.
+- `create-pact-guard` captures the results only at the moment of invocation. It does not track changes in `pact-id` beyond that point. Therefore, it is not suitable for situations where `pact-id` values are expected to change within the life of the guard.
+
+Remember to use these insights as precautions to prevent your guard functions from leading to unintended and unexpected behaviors in your pact code.
+

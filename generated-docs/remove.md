@@ -2,30 +2,41 @@
 
 ## Basic syntax
 
-The `remove` function is used to remove an entry for a specified key from an object.
-
-Here is the basic syntax for using the `remove` function:
+To remove a key-value pair from an object, use the following syntax:
 
 ```pact
 (remove *key*:string {object})
 ```
-The function takes a `string` type as a key and an `object` from which the key will be removed. 
 
-If the key exists in the object, the function will return a new object that does not contain the key. If the key does not exist, it will return the original object.
+Where:
+- `key`: a string that specifies the key in the object that you want to remove.
 
-Here's an example usage:
+The `remove` function modifies the given object by removing the specified key-value pair. If the object does not contain the given key, the function returns the original object without any modification.
+
+Here's an example of how to use `remove`:
 
 ```pact
 (remove "bar" { "foo": 1, "bar": 2 })
 ```
-In this example, the key `"bar"` is removed from the object `{ "foo": 1, "bar": 2 }`, producing the object `{ "foo": 1 }` since `"bar"` was removed.
+
+This function call will return: `{"foo": 1}`
+
+It's worth noting that the original object isn't modified — the function returns a new object.
+
+If the key doesn't exist in the object, the function will simply return the original object:
+
+```pact
+(remove "baz" { "foo": 1, "bar": 2 })
+```
+
+This function call will return: `{ "foo": 1, "bar": 2 }`
 
 ## Arguments
 
 | Argument | Type | Description |
 | --- | --- | --- |
-| key | string | Specifies the key of the entry you want to remove from the object. |
-| object | object:<{o}> | An object from which you want to remove the entry. This object should contain the provided key. After function execution it's returned in the modified form with the specific key-value pair being removed. |
+| key | string | Refers to the key of the entry that you want to remove from the object.|
+| object| object:<{o}> | Specifies the object whose specified key-value pair is to be removed. This must be an object datatype.|
 
 ## Prerequisites
 
@@ -33,27 +44,22 @@ N/A
 
 ## Return values
 
-The `remove` function returns a modified object after removing the specified key-value pair. The returned object is less the specified key-value pair. In cases where the specified key does not exist in the object, the function returns the object as is. 
-
-This return value would be useful in cases where you would like to create a new object with select properties of the original object removed. Furthermore, it is useful in data cleaning and manipulation tasks.
+The `remove` function returns a new object that is a copy of the original object, but with the property specified by the key string removed. If the specified key does not exist in the original object, the function simply returns a copy of the original object. The return value is useful when you want to produce a new object that excludes certain properties from the existing one.
 
 ## Examples
-
-Here are few examples demonstrating the use of the `remove` function:
 
 ```pact
 (remove "bar" { "foo": 1, "bar": 2 })
 ```
-The above example removes the entry with key "bar" from the object resulting in {"foo": 1}.
-
-Multiple uses can be seen in `coin-contract/coin.repl` file:
+In this example, the key "bar" is removed from the object. The function `remove` leaves an object with the remaining key-value pair of "foo":1 .The output will be `{"foo": 1}`
 
 ```pact
 (map (remove 'module-hash) (env-events true))
 ```
-In the above example, the `remove` function is used inside a `map` function in order to exclude the 'module-hash' entries from the events.
+In this example from the code snippets, the `remove` function is used with `map` to iterate through the list of events returned by `env-events true` function and remove the 'module-hash' from each event object.
 
-In all these examples, the `remove` function is used to eliminate specified key from an object.
+Note: Remember that the `remove` function does not modify the original object but returns a new object with the specified key-value pair removed.
+
 
 ## Options
 
@@ -61,22 +67,9 @@ N/A
 
 ## Property validation
 
-N/A
+The 'remove' function doesn't have any explicit property validation. Instead, it functions based on the inherent properties of maps or objects. Specifically, it operates under the assumption that the provided argument is a valid object with a defined key-value pair. If the object doesn't contain the specified key, or if the arguments are not of correct datatype (string key and an object), the function will return an error.
 
 ## Gotchas
 
-Using the `remove` function on an object that doesn't have the specified key won't cause an error, but it also won't modify the object. In other words, if you attempt to remove a key from an object, but that key doesn't exist in the object, the function simply returns the original object.
-
-For example, 
-
-```pact
-(remove "non-existant-key" {"foo": 1, "bar": 2})
-```
-Would return
-
-```pact
-{"foo": 1, "bar": 2}
-```
-
-Be careful not to use this function expecting it to warn you or fail when the key doesn't exist. Always ensure that the key is present in the object before attempting to remove it, if that is necessary for your logic.
+N/A
 

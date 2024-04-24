@@ -1,69 +1,63 @@
 # enforce-keyset
 
-## 
-Generate a clear and concise explanation of the basic syntax for your function. This section should contain at least one code snippet demonstrating how to use the function. The code should be provided in the format: 
+## Basic syntax
 
-'''pact
-your function syntax
-'''
+The `enforce-keyset` function is used to execute a specific guard or a defined keyset to enforce a predicate logic. Here, either a guard or a keyset name can be provided. 
 
-If your function can be overloaded, provide additional code snippets to reflect its multiple uses. Overall, aim to describe the syntax in a way that is easy to comprehend, including any necessary arguments and acceptable data types.
+Arguments: 
+1. `guard` should be a built-in guard type
+2. `keysetname` is a string representing a keyset name. 
 
+```pact
+(enforce-keyset 'keyset-name)
+(enforce-keyset guard)
+```
+In the examples above:
+- The first snippet `enforce-keyset` is taking a keyset name as an argument.'
+- The second snippet `enforce-keyset` is taking a guard as an argument. 
 
-Could not generate content.
+Note: `enforce-keyset` function must have either a keyset name or a guard as an argument, and it returns a boolean value.
+
 ## Arguments
 
 | Argument | Type | Description |
 | --- | --- | --- |
-| guard | guard | It is an identity-specific guard returned by `read-keyset`. The function will execute this guard to enforce desired predicate logic.|
-| keysetname | string | The function will attempt to execute the keyset with this name defined earlier in the code.|
+| guard/keysetname | guard/string | A guard object or name of the keyset. Guard enforces predicate logic. If a keyset name is provided, the function executes the defined keyset. |
 
 ## Prerequisites
 
-To use the `enforce-keyset` function, you should have a defined keyset or guard you wish to enforce when calling the function. The keyset name should be defined as a `string` and the guard should be derives from the `guard` data type. Definitions are usually set at the start of the function execution. It's also recommended to have a clear understanding of the logic the guard or keyset enforces for effective use of `enforce-keyset`.
+Before you can use the `enforce-keyset` function, you need to define the required keysets used in the function. A keyset refers to a set of public keys and their associated predicate that defines how many of those keys are required to authenticate a transaction. If the keyset is not defined or doesn't exist in the system, calling `enforce-keyset` with that keyset will result in an error. 
+
+In addition, remember that the `enforce-keyset` function does not exist in standalone mode. It only exists within a smart contract execution environment. Therefore, this function can only be used in the context of a running smart contract.
 
 ## Return values
 
-The `enforce-keyset` function does not have a return value itself. However, it throws an exception if the guard condition fails or if the specified keyset is not authorized. Thus, a successful completion of the function indicates that the enforced keyset or guard is valid and authorized, otherwise, it halts the execution of the transaction.
+The `enforce-keyset` function does not have a clear return value; instead, its primary function is to enforce desired predicate logic based on the guard or keyset provided. If this enforcement succeeds, execution continues normally. However, if it fails, an error is thrown which aborts the execution. This function is typically used for verifying user permissions before executing sensitive operations and does not carry a conventional return value.
 
 ## Examples
 
-The following examples demonstrate the use of the `enforce-keyset` function.
+Below are code examples on how to use the `enforce-keyset` function:
 
-The `enforce-keyset` function enforcing an admin keyset:
-
+Example 1:
 ```pact
 (enforce-keyset 'admin-keyset)
 ```
+In the context above, `enforce-keyset` is used to assert that the transaction is signed by keys defined in the 'admin-keyset'.
 
-The `enforce-keyset` function operating with a specified keyset:
-
-```pact
-(defcap OPERATE ()
-  (enforce-keyset 'operate-keyset))
-```
-
-The `enforce-keyset` function with a row guard:
-
+Example 2:
 ```pact
 (enforce-keyset row-guard)
 ```
+This usage demonstrates how a user-defined guard (row-guard in the context) can be used with `enforce-keyset`. 
 
-The `enforce-keyset` function in a user-defined capability:
-
+Example 3:
 ```pact
-(defcap FUND_USER ()
-  (enforce-keyset 'fund-keyset))
+(defcap OPERATE ()
+  (enforce-keyset 'ns-operate-keyset))
 ```
+In this snippet, `enforce-keyset` is used in the context of a capability (OPERATE in the context) to ensure that the capability can only be invoked by those keys in the ns-operate-keyset.
 
-The `enforce-keyset` function with keyset defined in a constant:
-
-```pact
-(defconst FUND_KEYSET (read-keyset 'fund-keyset))
-
-(defcap FUND_USER ()
-  (enforce-keyset FUND_KEYSET))
-```
+Each example demonstrates usage against a different use case: a string representing a pre-defined keyset, a user defined guard, and within a capability definition.
 
 ## Options
 
@@ -71,14 +65,19 @@ N/A
 
 ## Property validation
 
-The `enforce-keyset` function is primarily used to enforce the usage of a particular keyset passed as an argument. This function validates if the keyset or guard in the form of a user-defined string variable is properly defined and is available for usage within the pact.
+N/A
 
-Any malformed or non-existent keyset name passed as an argument, or a user-guard that does not return true, would result in the function throwing an error. 
+## Gotchas
 
-Hence the primary responsibility of `enforce-keyset` is to ensure that the provided argument is a valid keyset name, or a guard that meets the required invariant properties. If this validation fails, the function will consequently fail helping you ensure the property and accessibility constraints of your code.
+When using the `enforce-keyset` function:
 
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+- Ensure that the keyset name or guard you specify exists and is properly designated. If the keyset name or guard does not exist or if it's incorrectly specified, the function will not return the desired result and may cause unexpected behavior.
+  
+- Keep in mind that `enforce-keyset` does not return a value, but asserts a condition, i.e., it expects the condition to be true and will abort the transaction if it's not true. If you are looking for a function that returns a boolean value indicating whether the condition was met, consider using functions like `check-keyset`.
 
+- If `enforce-keyset` is used on a non-designated keyset which has not been created or declared prior to the use, it will result in an error.
 
-Could not generate content.
+- You must be careful when using guards. Remember that some guards, such as module guards, are not evaluated in the context where `enforce-keyset` is called. Therefore, their result may depend on other operations that have not been completed yet. Be sure to properly sequence your operations to avoid any unpredictable behavior.
+  
+- Always keep the permissions of the keysets in mind. If multiple parties are authorized to use a single keyset, any of them can pass the `enforce-keyset` test and execute the transaction. Make sure this is the intended behavior to prevent any unauthorized actions.
+

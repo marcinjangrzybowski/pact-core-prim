@@ -1,62 +1,98 @@
 # select
 
-## 
-Generate a clear and concise explanation of the basic syntax for your function. This section should contain at least one code snippet demonstrating how to use the function. The code should be provided in the format: 
+## Basic syntax
 
-'''pact
-your function syntax
-'''
+For selecting full rows based on a Boolean condition, use the following syntax:
 
-If your function can be overloaded, provide additional code snippets to reflect its multiple uses. Overall, aim to describe the syntax in a way that is easy to comprehend, including any necessary arguments and acceptable data types.
+```pact
+(select *table* *where*)
+```
 
+Where:
+- *table* is the table you want to select rows from.
+- *where* is a function that applies to each row to derive a boolean value. The function takes as input an object of the same structure as the rows in the table and returns a condition. If the condition is met, the row is included in the output.
 
-Could not generate content.
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+For selecting specific columns from rows that meet a Boolean condition, use:
+
+```pact
+(select *table* *columns* *where*)
+```
+
+Where:
+- *columns* is a list of column names you want to include in the selection. It is specified as a list of strings.
+
+Example:
+
+```pact
+(select people ['firstName, 'lastName] (where 'name (= "Fatima")))
+(select people (where 'age (> 30)))
+```
+
+In these examples, we are selecting rows from the `people` table. The first command returns the `firstName` and `lastName` for people named `Fatima`. The second command returns all columns for people aged over 30.
+
+## Arguments
 
 | Argument | Type | Description |
+| --- | --- | --- |
+| table | `table:<{row}>` | Specifies the table from which you want to select rows.  |
+| where | `row:object:<{row}> -> bool` | A boolean function to apply to each row to determine inclusion. |
+| columns (optional) | `[string]` | An optional list of column names to include in the returned rows. If not specified, full rows are returned. |
 
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
+## Prerequisites
 
-Ensure the number of rows in your table matches the arity of your function. 
+Before using the `select` function, ensure you have a predefined table or database from which you wish to fetch or select data. The table should have defined rows and columns. You should also have conditions based on which you want to filter or select your rows. These conditions are to be written as boolean expressions. If there are specific columns you want to select, identify them by their string names.
 
+## Return values
 
-Could not generate content.
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+The `select` function returns a list of rows or columns from a table based on the specified condition. 
 
+If you specify only the table and a condition in the `where` argument, `select` returns a list of full rows from the table that meet the condition. These returned rows are represented as an array of objects, where each object corresponds to a row. 
 
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+If you also specify a list of column names as the `columns` argument, `select` returns a list of objects, where each object contains only the named columns from the rows that meet the condition.
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
+In both cases, the return value is a list that can be useful when you want to retrieve, filter and process specific data from a table.
 
+## Examples
 
-Could not generate content.
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+```pact
+(select "people" ['firstName,'lastName] (where 'name (= "Fatima")))
+```
 
-'''pact
-your function usage example
-'''
+In the above example, the `select` function is being used to select specific columns (in this case, 'firstName' and 'lastName') from the 'people' table where the name equals "Fatima".
 
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
+```pact
+(select "people" (where 'age (> 30)))
+```
 
+In this example, the `select` function is being used without specifying columns to select. This will return all columns from the 'people' table for individuals who are older than 30.
 
-Could not generate content.
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+Please note that in both examples, the `where` clause is being used to apply conditions to the rows being selected. The `select` function returns the selected rows as lists of objects.
 
+## Options
 
-Could not generate content.
-## 
-If your function includes any form of property validation, explain it here. Clearly explain the rules that the function follows to verify its arguments and error conditions. If there is no property validation involved in your function, respond with 'N/A'.
+N/A
 
+## Property validation
 
-Could not generate content.
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+The 'select' function in Pact performs property validation by checking each row in the specified table against the provided 'where' condition. This condition is a function that must return a boolean value. If the 'where' condition applied to the row returns true, the row is included in the returned selection. 
 
+For the columns variant of 'select', the function additionally validates that all specified column names are valid keys in the row objects of the table. It will return an error if any of the specified columns do not exist in the table.
 
-Could not generate content.
+Please note that validation errors will trigger runtime failures, and as such, care must be taken to ensure that the 'where' condition can be safely applied to every row, and when using the columns variant, that all specified columns exist in every row of the table.
+
+## Gotchas
+
+Here are some potential gotchas to consider when using the `select` function:
+
+1. Be careful with the query on `select`. If your conditions in `where` function are not met, `select` will return an empty list. 
+
+2. If you provide an invalid column name to `select`, the function will return a `key not found` error.
+
+3. The argument types given to the `where` clause should match the column types. Mismatch in types could lead to runtime errors.
+
+4. Remember, `select` will not mutate the table. It is simply retrieving data based on the conditions provided.
+
+5. Make sure the table you're trying to select from actually exists, or a `table not found` error will be thrown.
+
+6. The `select` function doesn’t alter the execution of the pact program. Even if the provided data to the `select` function is incorrect, it doesn’t affect the program's state.
+

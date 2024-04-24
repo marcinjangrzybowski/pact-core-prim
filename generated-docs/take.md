@@ -2,126 +2,108 @@
 
 ## Basic syntax
 
-To use the `take` function to retrieve a specified number of values from a list or string, use the following syntax:
+The `take` function can take either an *integer* and *list* or *keys* and *object* as arguments. 
+
+To get values from a list (or string), use the following syntax:
 
 ```pact
-(take count:integer <list or string>)
+(take *count*:integer [list])
 ```
 
-If `count` is negative, it takes from the end. If `count` exceeds the interval (-2^63,2^63), it is truncated to that range.
+If *count* is negative, the function will take values from the end of the list. If *count* exceeds the interval from -2^63 to 2^63, it will be truncated to that range. 
 
-To use `take` function to retrieve entries in an object using specified keys, use this syntax:
+To get entries having keys from an object, use the following syntax:
 
 ```pact
-(take keys:[string] object:object)
+(take *keys*:[string] {object})
 ```
 
-These keys should be in string format and enclosed within square brackets. The entered object can be a user-created or a pre-defined object.
-
-```pact
-;;Example for the first use-case
-(take 2 "abcd")
-"ab"
-
-;;Example for the second use-case
-(take ['name] { 'name: "Vlad", 'active: false})
-{"name": "Vlad"}
-```
-
-The output of the `take` function depends on the input. For the first use-case, the return value will be a list or string of the specified length, for the second, the return value will be an object with the specified key-value pairs.
+In this case, *keys* is an array of strings representing the keys of the entries you want to retrieve from the object.
 
 ## Arguments
 
 | Argument | Type | Description |
 | --- | --- | --- |
-| count | integer | Specifies the number of values you want to retrieve from list or string. If the count is negative, values are taken from the end. |
-| list | list or string | The input from which specified number of elements will be taken. If a string is provided, a substring of specified count is returned starting from the beginning (or from the end if count is negative). |
-| keys | list of strings | Used when dealing with objects to specify the keys whose corresponding entries you want to retrieve from the object. |
-| object | object | Specifies the object from which entries will be taken according to the keys provided. |
-
+| count | integer | Specifies the number of values you want to retrieve from a list or string. If negative, takes from the end. If the count exceeds the range (-2^63,2^63), the argument is truncated to this range. |
+| list | string or list | Refers to the collection of items from which a set number is to be retrieved. For strings, `take` will retrieve a set number of characters. |
+| keys | list of strings | If working with an object, input a list of keys to retrieve the corresponding entries from the object.|
+| object | object | Specifies the object from which entries corresponding to the specified keys will be retrieved. |
 
 ## Prerequisites
 
-To use the `take` function, the prerequisites are as follows:
-
-1. Understanding of basic Pact syntax and language constructs.
-
-2. Familiarity with the types of collections in Pact, especially lists and objects, as function can be applied to both.
-
-3. Awareness of the concept and formulation of keys in an object.
-
-For negative count values, understanding of zero-based index and the specification that the extraction will start from the end of the list or string.
-
-Note: In Pact, string indexes are zero-based, meaning the first character in the string is at index 0, and the last character in a non-blank string is at index length-1.
+N/A
 
 ## Return values
 
-The `take` function returns a sublist or substring extracted from a list or string respectively or a subset of an object based on the specified keys. The return value is a collection (list, string, or object) which contains only the elements specified by the keys or indices. If `count` is used instead of keys, the function returns a collection with the number of elements starting from the beginning (positive count) or from the end (negative count) of the input collection.
+The `take` function will return a subset from a list or from a string, or a part of an object. 
 
-For example, if applied on a string, the function will return another string of specified length with characters taken from the beginning or end of the source string:
+If used on a list or string, the return will be a sublist or substring starting from the first item or character and containing 'count' number of elements or characters. If 'count' is negative, the sublist or substring starts from the end. 
 
-```pact
-(take 3 "Hello")
-"Hel"
-```
+If used on an object, it will return a new object that contains only the keys specified in the 'keys' parameter and their accompanying values.
 
-When applied on a list, it will return a sublist:
+The return value of this function is either a list, string, or an object, depending on the input it was used on. It can be saved in a variable for later use, or directly used as part of other functions or expressions. 
 
-```pact
-(take 2 [1 2 3 4 5])
-[1 2]
-```
+In case 'count' or 'keys' select more elements than the input has, no error occurs - the function simply returns the whole original list, string, or object. 
 
-And finally, when used with a key list on an object, it will return an object with only those key-pair values:
-
-```pact
-(take ['name] { 'name: "John", 'age: 30 })
-{"name": "John"}
-```
+While the function is commonly used for slicing lists or strings or for filtering objects, its implementation may vary depending on specific use-case scenarios.
 
 ## Examples
 
-The function `take` can be used both on strings/lists and on objects:
+The `take` function enables you to extract values from a list or string, and entries by specific keys from an object. See the following examples:
 
-Using `take` to get the first 2 characters of a string or elements of a list
+### List or string
+
+You can extract a specific number of items from the beginning of a list or a string. For instance, extracting the first 2 characters from a string:
+
 ```pact
 (take 2 "abcd")
 ```
-Output: "ab"
+This will give you:
+```pact
+"ab"
+```
 
-Using `take` to get the last 3 elements from a list
+You can also extract a specific number of items from the end of a list or a string by providing a negative count. For instance:
+
 ```pact
 (take (- 3) [1 2 3 4 5])
 ```
-Output: [3 4 5]
+This will result in:
+```pact
+[3 4 5]
+```
+### Object
 
-Using `take` to get specific keys from an object
+You can also take entries having specific keys from an object. For example:
+
 ```pact
 (take ['name] { 'name: "Vlad", 'active: false})
 ```
-Output: {"name": "Vlad"}
-
-In the following code snippet, `take` is used to fetch the first 2 characters of the string `account`. The returned string is used for an equality check afterwards.
+Results in:
 ```pact
-(let ((pfx (take 2 account))) (if (= ":" (take -1 pfx)) (take 1 pfx) "")))
+{"name": "Vlad"}
 ```
-
-Another use case of `take` is to obtain a specific number of characters from a hashed string. The following snippet gets the first 40 characters from the hashed value of `g`.
-```pact
-(take 40 (int-to-str 16 (str-to-int 64 (hash g)))
-```
+These examples work similarly for other data types and they help illustrate the basic use of the `take` function.
 
 ## Options
 
 N/A
 
-## 
-If your function includes any form of property validation, explain it here. Clearly explain the rules that the function follows to verify its arguments and error conditions. If there is no property validation involved in your function, respond with 'N/A'.
+## Property validation
 
+The `take` function can be used for property checking, particularly when specifying invariants or properties to test your code against. It is primarily used for extracting specific keys from objects, where the presence or absence of the keys can guide logic paths or prove conditions. 
 
-Could not generate content.
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+If taking from a list or a string, the `count` parameter must not exceed the range of (-2^63,2^63). If it does, it will be truncated to fit within that range. Invalid 'count' or 'keys' parameters lead to error conditions, returning a failure.
 
+Ensure to use valid keys while using the `take` function with objects. Using invalid keys might not return the intended result and could potentially lead to errors. The function does not inherently validate the keys, so this needs to be handled by the user to ensure smooth operation. 
 
-Could not generate content.
+For example, in a contract test, you might use the `take` function to ensure the presence of certain keys in the returned object post-transaction execution.
+
+## Gotchas
+
+- When using `take` with a negative count on a list or string, it retrieves the values from the end of the list or string. It might be tempting to understand it as fetching the values from the beginning, which is not the case.
+- When used with an object, `take` retrieves values corresponding to the keys. In case a non-existent key is passed, the function doesn't throw an error; it silently returns an object without the desired key-value pair.
+- If the count exceeds the interval (-2^63,2^63), it is truncated to that range. Keep in mind such limitations while specifying the count.
+- While using in property checking, consider the entire object has to be fetched first before using `take`. Depending on the size of your data, this might involve large computational resources.
+- Be cautious that using `take` on an empty string or list or with a non-existing key on an object will result in no output rather than an error.
+

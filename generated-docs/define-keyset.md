@@ -2,83 +2,92 @@
 
 ## Basic syntax
 
-The `define-keyset` function can be used in two different ways, each with a different syntax. Either a keyset can be explicitly specified or it can be read from a message payload. 
-
-The first syntax to define a keyset with a name and a keyset is as follows:
+The `define-keyset` function is used to create a keyset with a specified name, and optionally, a keyset value. Its general syntax is as follows:
 
 ```pact
-(define-keyset *name*:string *keyset*:string)
+(define-keyset 'keyset-name (read-keyset "keyset"))
 ```
 
-The second syntax to read a keyset from a message payload with the given name is as follows:
+Here, 'keyset-name' is a string that specifies the name of the keyset you want to create. If a keyset value is not specified, the function reads the name from the message payload as the keyset, similar to 'read-keyset'. 
+
+If the keyset's name already exists, the keyset will be enforced before updating to the new value. 
+
+Let's take a look at a simple example:
 
 ```pact
-(define-keyset *name*:string)
+(define-keyset "admin" (read-keyset "keyset1"))
 ```
 
-In both syntax representations, replace `*name*` and `*keyset*` with the actual variables or strings for your function. For instance:
+In this case, we are defining a keyset named "admin" with a keyset value obtained from reading "keyset1".
 
-```pact
-(define-keyset 'admin-keyset (read-keyset "keyset"))
-```
+Note that this function is for top level only and will fail if used in module code.
 
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+## Arguments
 
 | Argument | Type | Description |
-
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
-
-Ensure the number of rows in your table matches the arity of your function. 
-
-
-Could not generate content.
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+| -------- | ---- | ----------- |
+| name     | string | The name of the keyset you want to define or update. |
+| keyset   | string | (Optional) The keyset you want to associate with the given name. If not provided, the function will read the specified name from the message payload as keyset, similar to 'read-keyset'. |
 
 
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+## Prerequisites
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
+For the `define-keyset` function, the following prerequisites must be met:
 
+- The function should be used at the top level only and will fail if used in module code.
+- The keyset name and the keyset to be associated with the name need to be specified. If the keyset name already exists, the current keyset will be enforced before being updated to a new value.
+  
+Optional: 
 
-Could not generate content.
+- If you do not specify a keyset directly, it can be read from the message payload using the specified keyset name. In this scenario, the behavior is the same as the 'read-keyset' operation.
+
+## Return values
+
+The `define-keyset` function does not return a value. Instead, it performs the action of defining a keyset with the NAME provided and assigning the KEYSET value to it. If keyset NAME already exists, the function performs an enforcement check before updating to the new value. This function is used to define or re-define a keyset in the global keyset registry.
+
 ## Examples
 
 ```pact
 (define-keyset 'admin-keyset (read-keyset "keyset"))
 ```
-The above example defines a keyset named 'admin-keyset' using the keys from 'keyset'.
+
+The above example defines a keyset called `'admin-keyset'` using the `read-keyset` function. The `"keyset"` string is the name of the message payload containing the keyset data.
 
 ```pact
-(define-keyset 'operate (read-keyset 'gas-payer-operate))
+(define-keyset 'coin-operate)
 ```
-The above example defines a keyset named 'operate' using the keys from 'gas-payer-operate'.
+
+In this example, `'coin-operate'` keyset is defined without specifying a keyset. The function will attempt to read `'coin-operate'` keyset from the message payload.
+
 
 ```pact
-(define-keyset 'alloc)
+(env-data { "emily" : ["keys1"], "doug": ["keys2"], "stuart": ["keys3"] })
+(env-keys ["keys1", "keys2", "keys3", "keys4"])
+(define-keyset 'emily (read-keyset "emily"))
+(define-keyset 'doug (read-keyset "doug"))
+(define-keyset 'stuart (read-keyset "stuart"))
 ```
-This example demonstrates the operation of `define-keyset` function when one argument is passed and the keyset is supposed to be read from the message payload. If the named keyset already exists, keyset named 'alloc' will be enforced before updating to new value.
 
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+Here multiple keysets are being defined simultaneously. Environment data is set using `env-data`, followed by `env-keys`. After that, three keysets: `'emily'`, `'doug'`, and `'stuart'` are defined using the `define-keyset` function. Each of these keysets is reading data from the corresponding environment data.
 
 
-Could not generate content.
+## Options
+
+N/A
+
 ## Property validation
 
-The `define-keyset` function executes certain checks for property validation:
+N/A
 
-- It validates the keyset name to be defined. If a keyset with the same name already exists, the existing keyset will be enforced before updating to the new value. 
-- It also validates that the function is used at the top level. Usage in module code will result in failure.
-- The function accepts either a string argument for the keyset, in which case it attempts to read the keyset from message payload (similarly to 'read-keyset'), or a keyset object. 
+## Gotchas
 
-Failure of these validations will result in an error.
+The `define-keyset` has several nuances to remember:
 
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+1) This function will fail if used inside a module, it can only be executed at top level.
 
+2) It uses the `read-keyset` function to define its keyset. So, its behavior is dependent on the result of `read-keyset` and how the "keyset" is formatted in the payload.
 
-Could not generate content.
+3) If a keyset with passed name already exists, it will be enforced before updating to its new value, potentially causing execution to halt if the enforcement fails. 
+
+Be sure to thoroughly test your application of `define-keyset` considering these factors to ensure the expected behavior.
+

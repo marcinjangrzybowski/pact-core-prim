@@ -1,62 +1,63 @@
 # create-module-guard
 
-## 
-Generate a clear and concise explanation of the basic syntax for your function. This section should contain at least one code snippet demonstrating how to use the function. The code should be provided in the format: 
+## Basic syntax
 
-'''pact
-your function syntax
-'''
+To define a guard in the current module admin predicate using the `create-module-guard` function, use the following syntax:
 
-If your function can be overloaded, provide additional code snippets to reflect its multiple uses. Overall, aim to describe the syntax in a way that is easy to comprehend, including any necessary arguments and acceptable data types.
+```pact
+(create-module-guard 'guard-name)
+```
 
+In this syntax, `guard-name` represents the name of the guard you want to create. It should be a string. 
 
-Could not generate content.
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+This function does not accept any other arguments.
+
+## Arguments
 
 | Argument | Type | Description |
+| --- | --- | --- |
+| name | string | Specifies the name of the guard to be created. This guard enforces the current module admin predicate. |
 
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
+## Prerequisites
 
-Ensure the number of rows in your table matches the arity of your function. 
+N/A
 
+## Return values
 
-Could not generate content.
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+The `create-module-guard` function returns a `guard` object that is defined by the provided NAME and enforces the current module admin predicate. The returned guard can be used in subsequent parts of the pact code to verify and enforce access control mechanisms based on the administrative rules defined in the originating module.
 
+## Examples
 
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+```pact
+;; Define a function with admin-guard 
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
+(defun admin-only-func ()
+  (enforce-guard (create-module-guard 'admin-guard)))
 
+;; Define a module with 'admin-guard as the guard 
+(module myModule 'admin-guard)
 
-Could not generate content.
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+;; Within this module, any function decorated with 'admin-guard will be admin-only
+(defun admin-func ()
+  (create-module-guard 'admin-guard)
+  (enforce-guard (read-keyset 'admin-keyset)))
+```
 
-'''pact
-your function usage example
-'''
+In this example, `create-module-guard` is used to create a 'admin-guard. This guard is afterwards used to enforce admin only access in the 'admin-only-func function. It is also used as the guard when defining a module. In this module, any function that is decorated with 'admin-guard will be admin only functions.
 
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
+## Options
 
+N/A
 
-Could not generate content.
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+## Property validation
 
+As per the function usage observed, there's no explicit property validation done within the function `create-module-guard`. However, there's an implicit rule that the name provided should uniquely identify a module in the context. This is not checked inside the function itself but may lead to errors if the name cannot be resolved to a unique module. Therefore, it is imperative to ensure that the name argument passed to `create-module-guard` is valid and corresponds to a module. If this is not assured, it can lead to unexpected behavior or runtime failures.
 
-Could not generate content.
-## 
-If your function includes any form of property validation, explain it here. Clearly explain the rules that the function follows to verify its arguments and error conditions. If there is no property validation involved in your function, respond with 'N/A'.
+## Gotchas
 
+While using the `create-module-guard`, remember it creates a guard associated with the current module. This might not be intuitive at first as one might assume to be able to create a guard for any module.
 
-Could not generate content.
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+Furthermore, when using this function, one should be careful about the context where it is used since the guard is set to enforce the admin predicate of the module it is used in.
 
+There are no reported common errors when using `create-module-guard` correctly but be aware of the mentioned nuances relation to module context. The module guard creation is a powerful mechanism but it also introduces added complexity and potential for errors if misused. Always validate the correct creation and assignment of guards within the context of your module.
 
-Could not generate content.

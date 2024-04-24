@@ -2,38 +2,42 @@
 
 ## Basic syntax
 
-The `show` function in Pact is used to convert a value of any type to a string. This can be particularly useful when you need to display or print a value.
-
-Here is the basic syntax for using the `show` function:
+The `show` function in Pact has the following basic syntax:
 
 ```pact
-(show *value*)
+(show value)
 ```
 
-Where *value* can be any data type that can be converted into a string. This includes integers, decimal numbers, booleans, lists, and objects.
+The `show` function expects one argument:
 
-For example, the use of `show` function is as follows:
+- `value`: A Pact language value or any possible data structure to convert into a human-readable string format. 
+
+Here's a couple of examples using integers, real numbers, booleans, strings, and lists:
 
 ```pact
-(show 123)
+(show 4)
+"4"
+
+(show 4.456)
+"4.456"
+
+(show true)
+"true"
+
+(show "Hello, Pact!")
+"\"Hello, Pact!\""
+
+(show [1, 2, 3])
+"[1,2,3]"
 ```
 
-The above line of code will convert the integer 123 into a string.
-
-You can also use `show` function with other data types:
-
-```pact
-(show 123.456)     ; Converts a decimal number into a string
-(show true)        ; Converts a boolean value into a string
-(show [1 2 3])     ; Converts a list of integers into a string
-(show {"name": "John Doe"})  ; Converts an object into a string
-```
+If none value structures or Pact language values are supplied as arguments, the `show` function will throw an error as it needs exactly 1 argument to execute.
 
 ## Arguments
 
 | Argument | Type | Description |
 | --- | --- | --- |
-| value | Any | The value you want to convert into a string representation. `show` function can take any data type as input: string, number, boolean, etc. |
+| value | Any Type | The `show` function can accept any data type as its argument. This is the value that will be converted into a string. |
 
 ## Prerequisites
 
@@ -41,27 +45,44 @@ N/A
 
 ## Return values
 
-The `show` function returns a string representation of the input value. This returned value can be of any data type that can be converted into a string, including numbers, boolean values, null values, and even complex data structures like lists or objects. The main purpose of this function is to facilitate the display or logging of these values, which can be especially useful for debugging purposes. If the function fails to convert the input value into a string, it returns an error message indicating the reason for the failure.
+The `show` function returns a readable string representation of the input value. The type of the return value is always a string, regardless of what input data type was provided. This function is useful when you need visual representation of data or for debugging purposes, when you need to inspect or log the values during execution.
 
 ## Examples
 
 ```pact
-(show "Hello World!")
-"Hello World!"
+(show "Hello, Pact!")
+"Hello, Pact!"
+```
 
-(show 1234)
-"1234"
+In this example, the `show` function takes a string argument and returns the same string.
 
+```pact
+(show 42)
+"42"
+```
+
+In this example, the `show` function takes a numerical argument and returns a string representation of the number.
+
+```pact
 (show true)
 "true"
-
-(show [1 2 3 4])
-"[1,2,3,4]"
-
-(show { "name": "Alice", "age": 30 })
-"{\"name\":\"Alice\",\"age\":30}"
 ```
-These examples demonstrate `show` usage with string, numeric, boolean, list, and object inputs. The `show` function converts and returns its given input as a string.
+
+In this example, the `show` function takes a Boolean argument and returns a string representation of the Boolean value.
+
+```pact
+(show [1 2 3 4 5])
+"[1,2,3,4,5]"
+```
+
+In this example, the `show` function is used to convert a list of numbers to a string representation. Note how the resulting string includes the commas and brackets.
+
+```pact
+(show {"name": "John", "age": 30})
+"{\"name\": \"John\", \"age\": 30}"
+```
+
+In this example, the `show` function takes an object and returns a string representation of the object. Note how the keys and values are included in the resulting string, and are enclosed in quotes.
 
 ## Options
 
@@ -73,15 +94,5 @@ N/A
 
 ## Gotchas
 
-While using the `show` function, be mindful of the following:
-
-1. The `show` function will not check if the type you're trying to convert it to is valid. It will make the conversion without throwing an error. This can lead to unexpected results or data loss if proper checks are not in place.
-
-2. If `show` is used with an empty list or object, it will return an empty string. This might be an unexpected behavior in cases where you want to differentiate between empty objects and their `show` representation.
-
-3. Using `show` on circular references, like complex nested object structures, can result in endless loops or stack overflow errors. It’s recommended to ensure the objects passed to `show` function are acyclic.
-
-4. The `show` function does not perform a deep conversion for nested structures such as objects contained in a list. The contained object will be returned in its original form rather than converted to a string.
-
-5. Although `show` performs type conversion, it should not be used as a replacement for proper type casting and validation functions or techniques in your code.
+N/A
 

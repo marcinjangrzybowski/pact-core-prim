@@ -1,62 +1,81 @@
 # emit-event
 
-## 
-Generate a clear and concise explanation of the basic syntax for your function. This section should contain at least one code snippet demonstrating how to use the function. The code should be provided in the format: 
+## Basic syntax
 
-'''pact
-your function syntax
-'''
+To emit a specific event using the `emit-event` function, use the following syntax:
 
-If your function can be overloaded, provide additional code snippets to reflect its multiple uses. Overall, aim to describe the syntax in a way that is easy to comprehend, including any necessary arguments and acceptable data types.
+```pact
+(emit-event CAPABILITY)
+```
 
+Here, `CAPABILITY` is an expression that represents the event being emitted. This capability expression often takes the form of a function call.
 
-Could not generate content.
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+Here is an example usage:
+
+```pact
+(emit-event (TRANSFER "Bob" "Alice" 12.0))
+```
+In this example, the `emit-event` function is emitting a `TRANSFER` event, with "Bob", "Alice", and 12.0 being parameters of that event.
+
+## Arguments
 
 | Argument | Type | Description |
+| --- | --- | --- |
+| CAPABILITY | capability -> bool | This argument specifies the capability that will be emitted as an event. This should contain an action/functionality that is truthy i.e., evaluates to true. Failures occur when the specified CAPABILITY is not a @managed or @event. |
 
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
+## Prerequisites
 
-Ensure the number of rows in your table matches the arity of your function. 
+For the `emit-event` function to run successfully, the following prerequisites have to be met:
 
+1. You should have a defined capability on which you would like to emit an event.
+2. The capability you have defined should either be @managed or @event.
 
-Could not generate content.
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+Note that the `emit-event` function will fail if these prerequisites aren't met.
 
+## Return values
 
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+The `emit-event` function does not return any value. Its purpose is to trigger a specified event, with the state change being its primary effect rather than returning a value. If the CAPABILITY specified is not @managed or @event, the function will fail. This function is typically used for logging and auditing purposes.
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
+## Examples
 
+Here are some examples demonstrating the use of `emit-event` function:
 
-Could not generate content.
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+```pact
+(emit-event (TRANSFER "" "Alice" 50.0))
+```
 
-'''pact
-your function usage example
-'''
+In the above example, we are emitting an event where an amount of 50.0 is being transferred from an empty sender to the receiver "Alice".
 
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
+```pact
+(emit-event (TRANSFER "Bob" "" 100.0))
+```
 
+In this example, an amount of 100.0 is being transferred from the sender "Bob" to an empty receiver, representing withdrawal or removal of funds.
 
-Could not generate content.
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+```pact
+(emit-event (TRANSFER "Charlie" "Diane" 150.0))
+```
 
+The above example illustrates an event where an amount of 150.0 is being transferred from the sender "Charlie" to the receiver "Diane". 
 
-Could not generate content.
-## 
-If your function includes any form of property validation, explain it here. Clearly explain the rules that the function follows to verify its arguments and error conditions. If there is no property validation involved in your function, respond with 'N/A'.
+Please note that `emit-event` will only successfully emit an event if the capability specified is already managed or considered an event. The `TRANSFER` operation must also be defined in your code.
 
+## Options
 
-Could not generate content.
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+N/A
 
+## Property validation
 
-Could not generate content.
+The `emit-event` function checks whether the entered CAPABILITY argument is marked with either `@managed` or `@event`, and it fails if neither of these is present. In the context of Pact, CAPABILITY refers to a defined function that is identified by its type or schema, and it corresponds to a unique permission to perform that action.
+
+It is important to note that the `emit-event` function does not evaluate the body of the CAPABILITY argument but rather, it checks its annotation to ensure that it is either `@managed` or `@event`.
+
+To use `emit-event` for property checking, it can be inserted in an invariant or property block in your code. However you need to ensure that the CAPABILITY argument to `emit-event` is correctly marked with one of the aforementioned annotations. Failing to do so will result in the function failing.
+
+## Gotchas
+
+- The `emit-event` function will fail if the emitted CAPABILITY is not tagged with either @managed or @event.
+- The function does not evaluate the body of the capability, but only emits it.
+- When misused in contexts where the capability emission is not expected or monitored, it can result in unnoticed operations as it only emits the capability and does not execute it.
+- This method should be used carefully to avoid creating confusing behavior in smart-contracts.
+

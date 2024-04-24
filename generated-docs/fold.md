@@ -2,78 +2,70 @@
 
 ## Basic syntax
 
-The `fold` function in Pact allows you to reduce a list by applying a function to each element and the cumulative result. Here's the basic syntax:
+The `fold` function iteratively reduces a list by applying a function to the last result and the current element, starting from an initial value.
+
+Here is the basic syntax:
 
 ```pact
-(fold app:a->b->a init:a [list]:b) -> a
+(fold *app*:function *init*:a [list]:b) -> a
 ```
 
-In the syntax:
+Where:
+- *app* is the function to apply. The function should take two arguments: the accumulated result and the current list element.
+- *init* is the initial value to start with. This would also be the final result if the list is empty.
+- *list* is the list to reduce.
 
-- `app` is a function that takes two arguments: an element from the list and a cumulative result. This function is applied to each element in the list along with the cumulative result.
-  
-- `init` is the initial value used for the cumulative result. This value should be of the same type as the intended final result.
-  
-- `[list]` is the list to be reduced. The type of elements in this list should match the second argument type expected by the `app` function.
-
-The fold function will return a single value which is of the same type as `init`.
-
-For instance, if you would like to compute a sum of a list of integers, you can use the `+` function as `app`, 0 for `init`, and your list of integers for `[list]`:
+For example, this usage of `fold` will sum up the elements in a list:
 
 ```pact
 (fold (+) 0 [100 10 5])
 ```
-
-In this example, `fold` iteratively applies `+` to each element in the list `[100 10 5]` with the cumulative sum, starting at `0`, and finally returns the total sum, `115`.
 
 ## Arguments
 
 | Argument | Type | Description |
 | --- | --- | --- |
-| f | <a> y:<b> -> <a> | A function which takes two arguments and returns a single value which will be used as the first element ('accumulator') in the next iteration. |
-| a | <a> | The initial value for the function 'f'. This is the 'accumulator' used in the first invocation of 'f'. |
-| bs | [\<b>] | A list of elements to apply the function 'f' to. These are the 'values' in the iterations of 'f'. |
+| f | function | A function that takes two parameters: an accumulated value (of any type) and an element from the list. This function will be applied to each element of the list in turn, along with the result of the previous function application. |
+| a | any | The initial value for the accumulation, which can be of any type. This value will be used as the accumulated value for the first application of the function f. |
+| bs | list | The list of elements that will be folded. Each element in this list will be passed to the function f, along with the accumulated value resulting from the last function application. |
 
 ## Prerequisites
 
-To use the `fold` function successfully, the user needs an established understanding of iterative functions and collection handling in the Pact programming language. The user should be aware of how to create and manipulate collections, including lists and objects. A basic understanding of a lambda or a function is essential, as it is used in the `fold` function to iteratively apply a function to the elements of a list. Knowledge of different datatypes in Pact can also be useful, as `fold` can work with any datatype for the application function, initial value and collection elements. However, the Pact environment does not require any setup or special module imports for `fold` to operate, it is a built-in function available in any scope.
+Before using the `fold` function, ensure that you have defined or imported a function that will be passed as the first argument "app". This function should accept two arguments, one of the type 'a' (the same type as "init") and one of type 'b' (the same type as elements in the "list").
+
+You will also need a list collection of one or several items of type 'b'. 
+
+Lastly, you require an initial value of type 'a'. This will serve as the starting value for the folding application. 
+
+These are crucial for the `fold` function to execute without error. 
+
+In terms of underlying knowledge, understanding of functional programming concepts like Higher Order Functions and how fold (also known as reduce) works in other programming languages would be beneficial for writing the "app" function and using `fold`.
 
 ## Return values
 
-The `fold` function returns the accumulated results of iteratively applying the function on the list elements, starting with the initial value. This resultant value is of the same type as the initial value. The returned value is the final result obtained after all the elements in the list have been processed by the function. The `fold` function is beneficial when you need to reduce a collection of values to a single resultant value, such as calculating the sum of elements in a list or concatenating a sequence of strings.
+The `fold` function returns a value resulting from iteratively applying the function to each element and the previous result of the list. The output will be of the same type as the initial provided value. This output value signifies the accumulated consequence of the supplied operation (the function) performed on each element of the list, starting from the initial value, and can be useful in various contexts where an aggregation of values in a list is needed. For example, if the operation is addition and the list contains numerical values, the `fold` function would provide the sum of these values.
+
 
 ## Examples
 
-The following examples demonstrate the use of the `fold` function:
-
-Reducing a list of integers by applying a plus operator:
+Here are some examples that demonstrate how to use the `fold` function:
 
 ```pact
 (fold (+) 0 [100 10 5])
 ```
-In this case, 100, 10, and 5 are added together producing a result of 115. 
-
-You can also use `fold` with other operators:
-Multiplying a list of integers together:
+In this example, the `fold` function is used to add all the elements of the list `[100 10 5]` starting with an initial value of `0`. The resulting output would be `115`.
 
 ```pact
 (fold (*) 1 [2 3 4])
 ```
-In this example, we start with 1 and multiply each value in the list (2, 3, 4). The result is 24.
-
-Additionally, `fold` is not limited to numerical operations. Here is an example using `fold` with strings:
+Similarly, this example demonstrates how `fold` can be used for multiplication. Here, the `fold` function multiplies all the elements of the list `[2, 3, 4]` starting with an initial value of `1`. The resulting output would be `24`.
 
 ```pact
-(fold (++) "" ["Hello " "World!" " This " "is " "Pact."])
+(fold (-) 100 [20 10 5])
 ```
-This example concatenates a list of strings into a single string: "Hello World! This is Pact."
+Finally, this examples shows how `fold` can be used for subtraction. The `fold` function subtracts all the elements of the list `[20 10 5]` from an initial value of `100`. The resulting output would be `65`.
 
-For property checking, you can use the `fold` when specifying an invariant or a property to test your code against.
-
-Please make sure that the function you are using as the first argument of `fold` is binary (accepts two parameters). The final output of each step is the input for the next one. 
-
-Please note that examples using specific Kadena repositories are intended to serve as general guidance and may not work without the specific context and data of that repository.
-
+Remember that the function given to `fold` as the first argument must be a binary function that takes two arguments. The first argument given to this function during execution will be the accumulator (the result of the previous function call or the initial value), and the second will be the current element of the list.
 
 ## Options
 
@@ -81,21 +73,15 @@ N/A
 
 ## Property validation
 
-The `fold` function can be used for property validation by defining invariants or properties to test your code against. This is useful when you want to incrementally calculate some value or reduce a list based on certain conditions or a particular function. As `fold` iteratively applies a specified function to each element of the list along with the result of the last iteration, this can be helpful in checking cumulative properties.
+In the context of property validation, `fold` can be used to validate if an entire list satisfies certain conditions or requirements. This can be achieved by creating a predicate function that assesses each element against the condition. 
 
-For instance, you could use a `fold` function to check whether all elements in a list meet a certain property. Alternatively, `fold` could also be used to calculate and check some cumulative or aggregated property of the elements in the list.
+If the condition holds true for all elements, the `fold` function would return a value confirming this. On the contrary, if any of the elements fails the condition, `fold` would return a value indicating an error or a failure.
 
-If there is an error during the process, the function will stop and return the error. It is necessary to ensure that the function provided with the `fold` complies with the type requirements, i.e., it takes two arguments of any type and returns a result of the same type as the first argument. The initial value provided should also be of the same type as the first argument of the function. 
+Please note that the specific outcome of the `fold` operation depends on the predicate function used. The predicate function should be designed in such a way that it correctly represents the required condition and returns meaningful values. 
 
-Remember, as a property validator, `fold` can only test a condition to be validated or refuted, it cannot modify or correct properties.
+Also, the type for both the predicate function results and the list elements should be the same to ensure accurate property testing and validation.
 
 ## Gotchas
 
-- Using `fold` without a valid initial value can lead to unpredictable results. Ensure that your initial value is logical and applicable in the context of your application.
-- The function applied must correctly handle the input types provided. Mismatched data types can lead to runtime errors.
-- Be aware that the fold function will return the initial value if applied to an empty list. Ensure to handle this case properly in your code.
-- Bear in mind the order of arguments in the folding function. The first argument is always the accumulating result, and the second is the current list item. Confusing these can lead to unexpected results.
-- `fold` does not provide guarantees about the order of operations, especially in the case of concurrent or parallel programming environments. If the operations have side-effects or depend on certain ordering, `fold` may not behave as expected.
-
-Please always ensure to correctly validate and test your functions under various conditions.
+N/A
 

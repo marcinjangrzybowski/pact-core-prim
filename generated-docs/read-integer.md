@@ -2,68 +2,87 @@
 
 ## Basic syntax
 
-The `read-integer` function in Pact is used to parse string or number values as integers from the top level of message data body. Here's how to structure the function in a basic way:
+The `read-integer` function is used to parse a string or numeric value from the top level of a message data body and convert it into an integer.
+
+Here is the basic syntax:
 
 ```pact
-(read-integer "key")
+(read-integer *key*)
 ```
 
-In this case, `"key"` should be the name of the key you're trying to fetch a value from in the message's data body and parse it into an integer type. The key should be provided as a string.
+The `read-integer` function requires one argument:
 
-Here's an example:
+- `key`: This is a string value that points to the key in the message data body that contains the value to be parsed and converted into an integer.
+
+An example of how to use the `read-integer` function is as follows:
 
 ```pact
 (read-integer "age")
 ```
 
-In the example above, `read-integer` fetches the value associated with the key `"age"` from the top level of message data body and attempts to parse it into an integer.
+In this case, `"age"` is the key in the message data body that contains the value to be parsed and turned into an integer.
+
+If the function is able to parse the value at the provided key into an integer, it will return that integer. Otherwise, it will return an error.
+
+Please note that keys must be unique within their scope - a duplicate key error will be raised if the same key is used more than once.
 
 ## Arguments
 
 | Argument | Type | Description |
 | --- | --- | --- |
-| key | String | This required argument is a string or number value that is parsed from the top level of the message data body and returned as an integer. |
-
+| key | string | Specifies the key string or number value from the top level of the message data body which should be parsed as an integer. |
 
 ## Prerequisites
 
-N/A
+Prerequisites: The function `read-integer` requires a string key that is present in the top level of the message data body. This string key should correspond to a value that can be parsed into an integer. Failing to meet these prerequisites can lead to unsuccessful operation of the function. It is important to ensure that the given key refers to an appropriate value before using the `read-integer` function.
 
 ## Return values
 
-The `read-integer` function returns an integer value. Specifically, the function parses a given key from the top level of the message data body and interprets that key as an integer. This return value can be valuable in contexts where numerical data entry in the form of a key string or number is required from the message data body. If the key does not exist or is not interpretable as an integer, an error is returned.
+The `read-integer` function returns an integer value. This value is derived from the key string or number value that is at the top level of the message data body. The integer returned by `read-integer` is useful in situations where numerical data is needed for further computations or logical comparisons. The returned integer is a parsed version of the string or number value associated with the specified key in the message data body.
 
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+## Examples
 
-'''pact
-your function usage example
-'''
+Below are some examples of `read-integer` function usage:
 
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
+This example retrieves the value associated with the key "age" from the message data body and parses it as an integer.
+```pact
+(read-integer "age")
+```
+
+This example is from the coin contract REPL. In this scenario, a check is made to ensure the gas cost of loading the coin contract is as expected. The 'coin-load-gas’ value is read from the message data body and parsed as an integer.
+```pact
+(expect
+  "Gas cost of loading coin contract"
+  (try 3301 (read-integer "coin-load-gas"))
+  (env-gas))
+```
+
+In both examples, `read-integer` is utilized to parse string or number values from top level of message data body as integers.
 
 
-Could not generate content.
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
-
-
-Could not generate content.
-## Property validation
+## Options
 
 N/A
 
+## Property validation
+
+The `read-integer` function checks whether the supplied key exists in the data body and whether its corresponding value can be parsed into an integer. If the key does not exist or if the value associated with the key cannot be parsed into an integer, an error will be thrown. Thus, the property validation for `read-integer` centers around the existence and integer-parseability of the specified key in the data body.
+
 ## Gotchas
 
-Here are some potential pitfalls or common mistakes to be aware of when using the `read-integer` function:
+The `read-integer` function is designed to parse a key value from the top level of a message data body. This function assumes that the specified key will yield a value that can be parsed into an integer.
 
-1. The `read-integer` function expects the input to be a string that can be parsed into an integer. If another data type such as an object or array is passed, it will result in an error. Be mindful of the data types you are working with to avoid unexpected errors.
+- This can be a potential gotcha if the input at the specified key is not convertible to an integer. The function does not handle non-numeric or non-convertible strings which may throw an error.
+  
+- The function only operates at the top level of the data body, which means nested value cannot be read directly. Therefore, ensure the key refers to a top-level element.
 
-2. The function will attempt to read the key from the top level of the message data body. If the key isn't located at the top, an error will occur. To avoid this, make sure the hierarchy of your data structure is known and the specified key is indeed at the top level.
+- If the value associated with the key in the data body is not present or null, the function may throw a null exception error, so ensure the validity of data before its usage. 
 
-3. If the value corresponding to the key in the message data body is a string that doesn't represent a numerical value, the function will throw an error. Always ensure that the value is a stringified integer before trying to parse it with `read-integer`.
+- It's strictly a reading function and is not intended for data manipulation or transformation. Any attempt to modify data through it may result in unexpected outcomes. It does not check the validity of the input beyond whether it can be parsed into an integer.
 
-4. The function cannot handle numbers that exceed the safe integer range in JavaScript. Attempting to process such numbers can lead to incorrect results. Make sure the integers you are working with are within the safe range. 
+- It is expected that the key provided is a string. Providing a different data type may result in an error.
 
-Remember, to debug effectively, always check the data type and structure of your inputs before using the `read-integer` function.
+- The `read-integer` function does not handle underflow and overflow conditions. Passing a number that exceeds the maximum or minimum integer value in Pact results in an undefined behavior. 
+
+Always ensure appropriate error handling measures are put in place when using `read-integer` to anticipate and manage these potential issues.
 

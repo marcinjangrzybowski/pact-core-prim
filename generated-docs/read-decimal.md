@@ -2,55 +2,54 @@
 
 ## Basic syntax
 
-The basic syntax for the `read-decimal` function is simple and easy to use. The function accepts a string which corresponds to a key in the message data body. This key should point to a value which can be parsed as a decimal. 
-
-Here's a simple demonstration of the syntax:
+The syntax for the `read-decimal` function is as follows:
 
 ```pact
-(read-decimal "key")
+(read-decimal *key*: string)
 ```
+In the above syntax, `*key*` is a string that specifies the key of the data you want to parse as a decimal from the top level of a message data body.
 
-In this example, "key" is the string value that correlates with the value to be parsed as a decimal in the message data body. 
-
-Remember to confirm that the value associated with the given key can be successfully parsed as a decimal to prevent any runtime errors.
-
-## Arguments
-
-| Argument | Type | Description |
-| --- | --- | --- |
-| key | string | This argument specifies the key used to retrieve a decimal value from the top level of a message data body. |
-
-
-## Prerequisites
-
-N/A
-
-## Return values
-
-The `read-decimal` function returns a decimal value parsed from a string or number from the top level of the message data body, specified by a key. If the key refers to a string that can be converted to a decimal, the function will return this decimal. If the key refers to a number, the number is casted to decimal format and returned. This conversion to decimal format could be useful when precise mathematical operations need to be performed or decimal formatting is required for the data. 
-
-In the case when the specified key does not exist in the message data or cannot be converted to a decimal, the function will throw an error.
-
-## Examples
-
-```pact
-(read-decimal "amount")
-```
-This retrieves the decimal value associated with the key `amount` in the message data. 
+For example:
 
 ```pact
 (defun exec ()
    (transfer (read-msg "from") (read-msg "to") (read-decimal "amount")))
 ```
-In this example, `read-decimal` is used within a function to retrieve the value associated with `amount` key from the data passed to the function, and then use it in the `transfer` function.
+
+## Arguments
+
+| Argument | Type | Description |
+| --- | --- | --- |
+| key | string | This represents the key for the value to be parsed as a decimal from the top level of the message data body. The key must be a string. |
+
+## Prerequisites
+
+Before using the `read-decimal` function, a top-level message data body should be prepared where a key-value pair exists. The key should be of string type and associated value can be a single value which is either string or number. This value will be parsed as a decimal by the `read-decimal` function. A non-existent or a non-numeric value can lead to an error.
+
+## Return values
+
+The `read-decimal` function returns a decimal value. This decimal value is parsed from the *key* string or number value specified, retrieved from the top level of the displayed message data body. In the context of Pact programming, the returned decimal value could be useful in various situations where numerical calculations or manipulations are required, such as transferring a specific amount of digital currency between users or calculating a fee amount.
+
+## Examples
 
 ```pact
+;; Example 1: Read a decimal number from a message data body
+(let*
+  ((amount (read-decimal "amount")))
+)
+
+;; Example 2: Transfer fee from a message data body using read-decimal
+(defun exec ()
+ (transfer (read-msg "from") (read-msg "to") (read-decimal "amount"))
+)
+
+;; Example 3: Retrieve fee and calculate refund from a message data body using read-decimal
+(require-capability (GAS))
 (let*
   ((fee (read-decimal "fee"))
-   (refund (- total fee)))
+  (refund (- total fee)))
+)
 ```
-In this example, `read-decimal` is used to retrieve the value associated with `fee` key from the data, and calculate the refund amount by subtracting `fee` from `total`.
-
 
 ## Options
 
@@ -62,10 +61,5 @@ N/A
 
 ## Gotchas
 
-The function `read-decimal` reads a decimal input. It's important to note:
-
-1. The function `read-decimal` expects a decimal number under the `string` key in the message data body. Ensure that the input under the specified key is of decimal type. If a non-decimal value is passed, the function will throw an error.
-2. This function will read the value as a decimal regardless of whether the input is a string or an actual number.
-3. This function, being a built-in function had no validation for the inputs provided, as it directly attempts to parse the input as decimal. A non-valid decimal input would throw an error.
-4. Moreover, if the key doesn't exist, it fails with an error rather than returning a null or default value. Please ensure the key exists in the message data body.
+While using the `read-decimal` function, it's important to note that the input argument must be a string key that refers to a decimal value in the top-level of the message data body. If the key is incorrect or if the corresponding value is not a decimal, the function will fail. Also, if the value associated with the key is not present in the message data, the `read-decimal` function will return an error. The function expects a numerical value but it will attempt to parse a string value into a decimal, which can lead to unexpected results if the string is not a valid numerical representation. Additionally, ensure that the decimals you are passing are within the bounds of the Pact decimal type.
 

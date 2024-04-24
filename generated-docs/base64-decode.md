@@ -1,62 +1,71 @@
 # base64-decode
 
-## 
-Generate a clear and concise explanation of the basic syntax for your function. This section should contain at least one code snippet demonstrating how to use the function. The code should be provided in the format: 
+## Basic syntax
 
-'''pact
-your function syntax
-'''
+The basic syntax to decode a Base64 encoded string using the `base64-decode` function in Pact is as follows:
 
-If your function can be overloaded, provide additional code snippets to reflect its multiple uses. Overall, aim to describe the syntax in a way that is easy to comprehend, including any necessary arguments and acceptable data types.
+```pact
+(base64-decode *string*:string)
+```
 
+In the syntax, the `*string*` is a placeholder for the Base64-encoded string that you want to decode. If you call the `base64-decode` function and pass 'aGVsbG8gd29ybGQh' as the argument, the function decodes the Base64-encoded string, returning 'hello world!'. 
 
-Could not generate content.
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+Here's an example:
+
+```pact
+(base64-decode "aGVsbG8gd29ybGQh")
+```
+
+This code will return: 
+```pact
+"hello world!"
+```
+
+## Arguments
 
 | Argument | Type | Description |
+| --- | --- | --- |
+| STRING | string | A base64 encoded string that needs to be decoded. The function will take this string, decode it from base64 and return the decoded string. |
 
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
+## Prerequisites
 
-Ensure the number of rows in your table matches the arity of your function. 
+N/A
 
+## Return values
 
-Could not generate content.
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+The `base64-decode` function returns a string that represents the decoded version of the input base64 string. This return value is useful whenever you want to decode base64 string to the original text.
 
+## Examples
 
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+Below are some examples illustrating how the `base64-decode` function can be used:
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
+This example decodes a base64 encoded string "aGVsbG8gd29ybGQh" which represents "hello world!" in plaintext:
 
+```pact
+(base64-decode "aGVsbG8gd29ybGQh")
+"hello world!"
+```
 
-Could not generate content.
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+Another example with different base64 encoded string "SGVsbG8gdGhlcmUh" which represents "Hello there!":
 
-'''pact
-your function usage example
-'''
+```pact
+(base64-decode "SGVsbG8gdGhlcmUh")
+"Hello there!"
+```
 
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
+Note: The `base64-decode` function decodes string from unpadded base64 format.
 
+## Options
 
-Could not generate content.
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+N/A
 
+## Property validation
 
-Could not generate content.
-## 
-If your function includes any form of property validation, explain it here. Clearly explain the rules that the function follows to verify its arguments and error conditions. If there is no property validation involved in your function, respond with 'N/A'.
+The `base64-decode` function does not perform explicit property validation within the function itself. However, it assumes that the input is a properly formatted base64 encoded string without any padding. If the input is incorrectly formatted, not a string, or includes padding, the function will return an error. In cases where you need to ensure that your base64 encoded strings are correctly formatted before calling `base64-decode`, you should perform your own property validation checks prior to calling this function.
 
+## Gotchas
 
-Could not generate content.
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+The `base64-decode` function does not handle padded base64 strings; it only works with unpadded base64 strings. If you attempt to decode a base64 string that includes padding characters (usually `=` or `==` at the end), the function will return an error.
 
+Also, be aware that the function only decodes valid base64 strings. If the input string is not a valid base64 string, the function will fail. Always ensure that the input to this function is valid unpadded base64-encoded data.
 
-Could not generate content.

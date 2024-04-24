@@ -1,62 +1,94 @@
 # insert
 
-## 
-Generate a clear and concise explanation of the basic syntax for your function. This section should contain at least one code snippet demonstrating how to use the function. The code should be provided in the format: 
+## Basic syntax
 
-'''pact
-your function syntax
-'''
+The `insert` function in Pact is used to add an entry in a specified table for a given key of object column data. The function will result in a failure if data already exists for the given key.
 
-If your function can be overloaded, provide additional code snippets to reflect its multiple uses. Overall, aim to describe the syntax in a way that is easy to comprehend, including any necessary arguments and acceptable data types.
+Here's the basic syntax:
 
+```pact
+(insert tableName keyName rowObject)
+```
 
-Could not generate content.
-## 
-In this section, provide a detailed explanation of all the arguments of your function. Create a markdown table with each row representing a different argument. Your table should include the following fields:
+In the syntax above:
+
+- `tableName` is the name of the table where the entry is to be added
+- `keyName` is the key for the object data
+- `rowObject` is the object data that is to be inserted in the table under the specified key
+
+The `rowObject` should match the table's column structure.
+
+Here's an example of how the syntax would work:
+
+```pact
+(insert accounts "id" { "balance": 0.0, "note": "Created account." })
+```
+
+In this example, the function is adding an entry to the accounts table. The key for the entry is "id", and the data object of the entry is `{ "balance": 0.0, "note": "Created account." }`.
+
+## Arguments
 
 | Argument | Type | Description |
+| --- | --- | --- |
+| `table` | `table:<{row}>` | Defines the table in which the record will be inserted. |
+| `key` | `string` | The key associated with the data that has been inserted. |
+| `object` | `object:<{row}>` | The data to be inserted into the table. The data should match the schema of the table.
 
-Make sure the 'Argument' field contains the name of the argument, 'Type' lists the data type of the argument, and 'Description' holds a clear, concise explanation of what the argument means in the context of your function. 
+## Prerequisites
 
-Ensure the number of rows in your table matches the arity of your function. 
+Before using the `insert` function, ensure that you have a defined table in which you want to insert the data. The table should be of the type `table:<{row}>`.
 
+A string `key` must be provided which acts as the identifier for the entry you're creating in the table.
 
-Could not generate content.
-## 
-If your function needs any prerequisites to run successfully, describe them here. If there are no prerequisites, respond with 'N/A'.
+An `object` of the format `object:<{row}>` needs to be supplied as well. This object needs to match the structure of a row in the table in which you're inserting the data, as it will be used to fill the columns of the new entry.
 
+The `insert` function will fail if data already exists for the provided `key`.
 
-Could not generate content.
-## 
-In this section, detail what your function returns. Describe the type and purpose of the returned value, and explain in what context this return value would be useful. 
+Furthermore, as observed from the code snippets, ensure that necessary permissions and checks related to table modification within your application are appropriately handled before calling `insert`.
 
-Remember, this section should not be left empty - if the function does not return anything, clearly state that this is the case.
+## Return values
 
+The `insert` function does not return any value. Instead, the main purpose of this function is to insert a new entry into a specified table. If the operation is successful, nothing is returned. However, if an entry already exists for the provided key, the function will throw an error. It should be noted that the absence of a return value does not indicate failure, rather, exceptions are used to indicate failure in the operation. This function is typically useful in contexts where you need to add a new record to a table and ensure that the key for the record is unique.
 
-Could not generate content.
-## 
-Provide few code examples demonstrating the use of your function. Each example should be contained within the markdown code block: 
+## Examples
 
-'''pact
-your function usage example
-'''
-
-The examples should be clear and easy to understand. They should demonstrate the use of different arguments or use cases where applicable.
-
-
-Could not generate content.
-## 
-If your function has any configurable options, describe them here in the format similar to the 'Arguments'. That is, a markdown table with 'Option', 'Type' and 'Description' as columns. Make sure to clearly explain the effect of each option on your function's execution. If there are no options, respond with 'N/A'.
+```pact
+(insert accounts "id1" { "balance": 100.0, "note": "Created account." })
+```
+The above example inserts an entry in the 'accounts' table with the key string "id1". The corresponding data object contains a "balance" of 100.0 and a "note" with the value "Created account." The operation would fail if a data entry associated with the key string "id1" already exists in the 'accounts' table.
 
 
-Could not generate content.
-## 
-If your function includes any form of property validation, explain it here. Clearly explain the rules that the function follows to verify its arguments and error conditions. If there is no property validation involved in your function, respond with 'N/A'.
+```pact
+(insert coin-table "coin1" 
+  { "balance" : 0.0
+  , "guard" : 'keyset1
+  }
+)
+```
+The above example inserts an entry in the 'coin-table' table with the key string "coin1". The corresponding data object contains a "balance" of 0.0 and a "guard" with the value 'keyset1. The operation would fail if a data entry associated with the key string "coin1" already exists in the 'coin-table' table.
 
 
-Could not generate content.
-## 
-In this section, discuss any unintuitive behavior, potential pitfalls, or common mistakes to avoid while using your function. Make sure to present this information in a clear and concise manner to help your users avoid these issues. If there are no known gotchas associated with your function, respond with 'N/A'.
+```pact
+(insert allocation-table "alloc1" 
+  { "balance" : 5000.0
+  , "date" : "2020-01-01T00:00:00Z"
+  }
+)
+```
+The above example inserts an entry in the 'allocation-table' with the key string "alloc1". The corresponding data object contains a "balance" of 5000.0 and a "date" with the value "2020-01-01T00:00:00Z". The operation would fail if a data entry associated with the key string "alloc1" already exists in the 'allocation-table'.
 
+## Options
 
-Could not generate content.
+N/A
+
+## Property validation
+
+N/A
+
+## Gotchas
+
+## Gotchas
+
+- The `insert` function will fail if data already exists for the specified KEY in the TABLE. Make sure that the key you're inserting does not already exist in the table to avoid this issue.
+- The function expects the table and object passed in to have matching data schemas (same fields and corresponding types). Attempting to insert an object with a schema that doesn't match the table's schema will result in an error.
+
